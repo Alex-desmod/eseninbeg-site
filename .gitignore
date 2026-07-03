@@ -1,0 +1,26 @@
+# Virtual Environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution
+build/
+dist/
+*.egg-info/
+
+# Django
+db.sqlite3
+media/
+
+# IDE
+.idea/
+.vscode/
+
+# Environment
+.env
+
+# Windows
+Thumbs.db
