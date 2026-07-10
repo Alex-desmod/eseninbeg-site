@@ -7,12 +7,6 @@ class DistanceInline(admin.TabularInline):
     extra = 1
 
 
-class DistanceRecordInline(admin.TabularInline):
-    model = DistanceRecord
-    extra = 0
-    max_num = 2
-
-
 class ScheduleItemInline(admin.TabularInline):
     model = ScheduleItem
     extra = 1
@@ -32,11 +26,14 @@ class VenueInfoInline(admin.StackedInline):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ['title', 'date', 'location', 'status']
+    list_display = ['home_order', 'title', 'date', 'location', 'status']
+    list_display_links = ['title']
+    list_editable = ['home_order']
     prepopulated_fields = {'slug': ('title',)}
     inlines = [DistanceInline, ScheduleItemInline, BibPickupInfoInline, VenueInfoInline]
 
 
-@admin.register(Distance)
-class DistanceAdmin(admin.ModelAdmin):
-    inlines = [DistanceRecordInline]
+@admin.register(DistanceRecord)
+class DistanceRecordAdmin(admin.ModelAdmin):
+    list_display = ['distance', 'gender', 'athlete', 'result_time', 'date']
+    list_filter = ['distance__event', 'gender']

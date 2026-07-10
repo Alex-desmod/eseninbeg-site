@@ -16,12 +16,14 @@ class Event(models.Model):
     location = models.CharField('Место', max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='upcoming')
     description = models.TextField('Описание', blank=True)
-    cover_image = models.ImageField('Обложка', upload_to='events/covers')
+    cover_image = models.ImageField('Обложка', upload_to='events/covers/')
+    home_banner = models.ImageField('Баннер на главной', upload_to='events/banners/', blank=True)
+    home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)
     registration_url = models.URLField('Ссылка на регистрацию', blank=True)
     results_url = models.URLField('Ссылка на результаты', blank=True)
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['home_order']
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -37,7 +39,7 @@ class Distance(models.Model):
     name = models.CharField('Название', max_length=100)
     length_km = models.DecimalField(max_digits=5, decimal_places=2)
     start_time = models.TimeField(null=True, blank=True)
-    route_map_image = models.ImageField('Схема трассы', upload_to='events/routes', blank=True)
+    route_map_image = models.ImageField('Схема трассы', upload_to='events/routes/', blank=True)
     gpx_file = models.FileField('GPX трек', upload_to='events/gpx', blank=True)
 
     def __str__(self):
@@ -55,7 +57,7 @@ class DistanceRecord(models.Model):
     athlete = models.CharField('Имя спортсмена', max_length=100)
     result_time = models.DurationField('Результат')
     date = models.DateField('Дата')
-    photo = models.ImageField('Фото', upload_to='events/records', blank=True)
+    photo = models.ImageField('Фото', upload_to='events/records/', blank=True)
 
     class Meta:
         unique_together = [('distance', 'gender')]  # one record for gender
