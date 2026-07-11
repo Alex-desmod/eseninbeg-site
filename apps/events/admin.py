@@ -30,6 +30,7 @@ class EventAdmin(admin.ModelAdmin):
     list_display_links = ['title']
     list_editable = ['home_order']
     prepopulated_fields = {'slug': ('title',)}
+    filter_horizontal = ['partners']
     inlines = [DistanceInline, ScheduleItemInline, BibPickupInfoInline, VenueInfoInline]
 
 

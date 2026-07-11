@@ -21,9 +21,15 @@ class Event(models.Model):
     home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)
     registration_url = models.URLField('Ссылка на регистрацию', blank=True)
     results_url = models.URLField('Ссылка на результаты', blank=True)
+    partners = models.ManyToManyField(
+        'partners.Partner',
+        related_name='events',
+        blank=True,
+        verbose_name='Партнёры'
+    )
 
     class Meta:
-        ordering = ['home_order']
+        ordering = ['home_order', 'date']
 
     def save(self, *args, **kwargs):
         if not self.slug:

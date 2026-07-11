@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Events block title{% endblock %}
+
+{% block content %}
+<section class="events">
+    <div class="events-grid">
+        {% for event in events %}
+        <a href="{% url 'events:detail' slug=event.slug %}" class="event-card">
+            {% if event.home_banner %}
+                <img src="{{ event.home_banner.url }}" alt="{{ event.title }}">
+            {% else %}
+                <img src="{{ event.cover_image.url }}" alt="{{ event.title }}">
+            {% endif %}
+            <h3>{{ event.title }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
