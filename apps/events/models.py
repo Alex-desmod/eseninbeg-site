@@ -12,12 +12,17 @@ class Event(models.Model):
 
     title = models.CharField('Название', max_length=200)
     slug = models.SlugField(unique=True, blank=True)
-    date = models.DateField('Дата')
+    date = models.DateField('Дата', blank=True, null=True)
     location = models.CharField('Место', max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='upcoming')
     description = models.TextField('Описание', blank=True)
     cover_image = models.ImageField('Обложка', upload_to='events/covers/')
-    home_banner = models.ImageField('Баннер на главной', upload_to='events/banners/', blank=True)
+    home_banner = models.ImageField(
+        'Баннер на главной',
+        upload_to='events/banners/',
+        help_text='~2000×700 px, формат JPG/WebP',
+        blank=True
+    )
     home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)
     registration_url = models.URLField('Ссылка на регистрацию', blank=True)
     results_url = models.URLField('Ссылка на результаты', blank=True)

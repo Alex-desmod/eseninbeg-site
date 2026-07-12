@@ -2,3 +2,138 @@
 
 {% block title %}{{ event.title }}{% endblock %}
 
+{% block content %}
+
+<article class="event-detail">
+    <a href="{% url 'core:home' %}" class="logo">На главную</a>
+    <img src="{{ event.cover_image.url }}" alt="{{ event.title }}" class="event-cover">
+
+    <div class="event-actions">
+        {% if event.registration_url %}
+            <a href="{{ event.registration_url }}" target="_blank" rel="noopener" class="btn btn-primary">Регистрация</a>
+        {% else %}
+            <span class="btn btn-disabled" aria-disabled="true">Регистрация</span>
+        {% endif %}
+
+        {% if event.results_url %}
+            <a href="{{ event.results_url }}" target="_blank" rel="noopener" class="btn btn-secondary">Результаты</a>
+        {% else %}
+            <span class="btn btn-disabled" aria-disabled="true">Результаты</span>
+        {% endif %}
+    </div>
+
+    <h1>{{ event.title }}</h1>
+    <p class="event-meta">{{ event.date|date:"d.m.Y" }} — {{ event.location }}</p>
+
+    {% if event.description %}
+    <div class="event-description">
+        {{ event.description|linebreaks }}
+    </div>
+    {% endif %}
+
+    {% if event.distances.exists %}
+    <details class="event-section">
+        <summary>Дистанции</summary>
+        <div class="section-content">
+            {% for distance in event.distances.all %}
+            <div class="distance-item">
+                <h3>{{ distance.name }} — {{ distance.length_km }} км</h3>
+                {% if distance.start_time %}
+                    <p>Старт: {{ distance.start_time|time:"H:i" }}</p>
+                {% endif %}
+
+                {% if distance.route_map_image %}
+                    <img src="{{ distance.route_map_image.url }}" alt="Схема трассы {{ distance.name }}">
+                {% endif %}
+
+                {% if distance.gpx_file %}
+                    <a href="{{ distance.gpx_file.url }}">Скачать GPX трек</a>
+                {% endif %}
+
+                {% if distance.records.exists %}
+                <div class="distance-records">
+                    <h4>Рекорды дистанции</h4>
+                    {% for record in distance.records.all %}
+                    <div class="record-item">
+                        <p>{{ record.get_gender_display }}: {{ record.athlete }} — {{ record.result_time }} ({{ record.year }})</p>
+                        {% if record.photo %}
+                            <img src="{{ record.photo.url }}" alt="{{ record.name }}">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </details>
+    {% endif %}
+
+    {% if event.bib_pickup %}
+    <details class="event-section">
+        <summary>Выдача номеров</summary>
+        <div class="section-content">
+            <p><strong>Адрес:</strong> {{ event.bib_pickup.address }}</p>
+            <p><strong>Даты:</strong> {{ event.bib_pickup.date_from|date:"d.m.Y" }} — {{ event.bib_pickup.date_to|date:"d.m.Y" }}</p>
+            <p><strong>Часы работы:</strong> {{ event.bib_pickup.working_hours }}</p>
+            {% if event.bib_pickup.description %}
+                {{ event.bib_pickup.description|linebreaks }}
+            {% endif %}
+        </div>
+    </details>
+    {% endif %}
+
+    {% if event.schedule_items.exists %}
+    <details class="event-section">
+        <summary>Программа</summary>
+        <div class="section-content">
+            <ul class="schedule-list">
+                {% for item in event.schedule_items.all %}
+                <li>
+                    <strong>{{ item.time|time:"H:i" }}</strong> — {{ item.title }}
+                    {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </details>
+    {% endif %}
+
+    {% if event.venue_info %}
+    <details class="event-section">
+        <summary>Как добраться</summary>
+        <div class="section-content">
+            <p><strong>Адрес:</strong> {{ event.venue_info.address }}</p>
+            {% if event.venue_info.directions_text %}
+                {{ event.venue_info.directions_text|linebreaks }}
+            {% endif %}
+            {% if event.venue_info.parking_info %}
+                <h4>Парковка</h4>
+                {{ event.venue_info.parking_info|linebreaks }}
+            {% endif %}
+            {# сюда позже подключим карту по event.venue_info.latitude/longitude #}
+        </div>
+    </details>
+    {% endif %}
+
+    <details class="event-section">
+        <summary>Как это было</summary>
+        <div class="section-content">
+            <p>Галерея скоро появится.</p>
+            {# сюда позже подключим gallery.MediaItem #}
+        </div>
+    </details>
+
+    {% if event.partners.exists %}
+    <div class="event-partners">
+        {% for partner in event.partners.all %}
+            <a href="{{ partner.website_url }}" target="_blank" rel="noopener">
+                <img src="{{ partner.logo.url }}" alt="{{ partner.name }}">
+            </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</article>
+
+{% endblock %}
