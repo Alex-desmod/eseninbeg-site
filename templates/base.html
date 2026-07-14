@@ -13,6 +13,7 @@
         <div class="flex items-center gap-2 w-[30%] sm:w-[20%]">
             {# сюда позже — картинка-логотип #}
             <span class="font-semibold tracking-tight text-base sm:text-lg">Support your local</span>
+            <p class="text-sm text-neutral-500">(лого банды или какая-нибудь фраза)</p>
         </div>
         {# сюда позже — ссылка на магазин мерча #}
         <nav>
@@ -26,23 +27,23 @@
 
     <footer class="border-t border-neutral-200 py-8 px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-            <a href="#" aria-label="Telegram" class="text-neutral-500 hover:text-neutral-900">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M21.94 4.6c.24-1-.63-1.8-1.57-1.44L2.4 10.42c-.98.38-.97 1.78.02 2.14l4.5 1.62 1.74 5.6c.2.63 1 .8 1.44.3l2.55-2.9 4.7 3.46c.8.6 1.94.17 2.15-.8L21.94 4.6zM8.5 13.6l9.2-6.1-7.6 7.1-.3 3.2-1.3-4.2z"/>
-                </svg>
+            <a href="#" aria-label="Telegram" class="group block w-5 h-5">
+                <span class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
+                             [mask-image:url('{% static "img/icons/tg.svg" %}')] [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
+                             [-webkit-mask-image:url('{% static "icons/telegram.svg" %}')] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]"></span>
             </a>
-            <a href="#" aria-label="VK" class="text-neutral-500 hover:text-neutral-900">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.8 16.9c-4.8 0-7.6-3.3-7.7-8.8h2.5c.1 3.7 1.7 5.3 3 5.6V8.1h2.3v3.5c1.3-.1 2.6-1.5 3-3.5h2.3c-.3 2.3-2 3.9-3.2 4.6 1.2.5 3.1 1.9 3.8 4.2h-2.5c-.5-1.9-2-3.3-4-3.5v3.5h-.5z"/>
-                </svg>
+            <a href="#" aria-label="VK" class="group block w-5 h-5">
+                <span class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
+                             [mask-image:url('{% static "img/icons/vk.svg" %}')] [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
+                             [-webkit-mask-image:url('{% static "icons/vk.svg" %}')] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]"></span>
             </a>
             <a href="mailto:run@eseninbeg.ru" class="text-sm text-neutral-500 hover:text-neutral-900">
                 run@eseninbeg.ru
             </a>
         </div>
         <div class="flex items-center gap-2">
-            <p class="text-sm text-neutral-500">{% now "Y" %} built with ♡</p>
-            <img src="{% static 'img/goose.svg' %}" alt="" class="w-14 h-14 sm:w-20 sm:h-20 opacity-50">
+            <p class="text-sm text-neutral-500">{% now "Y" %} | built with ♡</p>
+            <img src="{% static 'img/icons/goose.svg' %}" alt="" class="w-14 h-14 sm:w-20 sm:h-20 opacity-50">
         </div>
     </footer>
 

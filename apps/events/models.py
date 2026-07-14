@@ -16,11 +16,15 @@ class Event(models.Model):
     location = models.CharField('Место', max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='upcoming')
     description = models.TextField('Описание', blank=True)
-    cover_image = models.ImageField('Обложка', upload_to='events/covers/')
+    cover_image = models.ImageField(
+        'Обложка',
+        upload_to='events/covers/',
+        help_text='~1600*2000px, JPG/PNG'
+    )
     home_banner = models.ImageField(
         'Баннер на главной',
         upload_to='events/banners/',
-        help_text='~2000×700 px, формат JPG/WebP',
+        help_text='~2000×700px, JPG/PNG, оставь место по краям',
         blank=True
     )
     home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)

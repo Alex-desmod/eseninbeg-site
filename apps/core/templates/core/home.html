@@ -3,7 +3,7 @@
 {% block title %}Some title{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto flex flex-col items-center gap-2 py-6 px-4">
+<div class="flex flex-col items-center gap-2 py-6 px-4">
     {% for event in events %}
     <a href="{% url 'events:detail' slug=event.slug %}"
        class="group relative w-[90%] h-48 sm:h-56 md:h-64 flex items-center overflow-hidden rounded-lg">
@@ -12,7 +12,7 @@
              style="background-image: url('{% if event.home_banner %}{{ event.home_banner.url }}{% else %}{{ event.cover_image.url }}{% endif %}');">
         </div>
 
-        <div class="relative ml-2 sm:ml-4 h-[90%] w-[40%] sm:w-[30%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md">
+        <div class="relative ml-2 sm:ml-4 h-[90%] w-[40%] sm:h-[85%] sm:w-[30%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md">
             <h2 class="mb-4 text-lg sm:text-3xl md:text-4xl uppercase font-semibold tracking-tight text-white leading-snug">
                 {{ event.title }}
             </h2>
