@@ -4,64 +4,70 @@
 
 {% block content %}
 
-<article class="event-detail">
-    <a href="{% url 'core:home' %}" class="logo">На главную</a>
-    <img src="{{ event.cover_image.url }}" alt="{{ event.title }}" class="event-cover">
+<article class="pb-16">
 
-    <div class="event-actions">
+    {# ---------- Cover ---------- #}
+    <div class="relative w-[90%] md:w-[50%] mx-auto mt-6 md:mt-8 rounded-lg overflow-hidden">
+        <img src="{{ event.cover_image.url }}" alt="{{ event.title }}" class="w-full h-auto object-cover">
+
         {% if event.registration_url %}
-            <a href="{{ event.registration_url }}" target="_blank" rel="noopener" class="btn btn-primary">Регистрация</a>
-        {% else %}
-            <span class="btn btn-disabled" aria-disabled="true">Регистрация</span>
+        <a href="{{ event.registration_url }}" target="_blank" rel="noopener"
+           class="absolute left-4 bottom-4 px-4 py-2 rounded-md text-sm font-medium
+                  bg-white/90 border border-emerald-600 text-emerald-700
+                  hover:bg-emerald-600 hover:text-white transition-colors">
+            Регистрация
+        </a>
         {% endif %}
 
         {% if event.results_url %}
-            <a href="{{ event.results_url }}" target="_blank" rel="noopener" class="btn btn-secondary">Результаты</a>
-        {% else %}
-            <span class="btn btn-disabled" aria-disabled="true">Результаты</span>
+        <a href="{{ event.results_url }}" target="_blank" rel="noopener"
+           class="absolute right-4 bottom-4 px-4 py-2 rounded-md text-sm font-medium
+                  bg-white/90 border border-emerald-600 text-emerald-700
+                  hover:bg-emerald-600 hover:text-white transition-colors">
+            Результаты
+        </a>
         {% endif %}
     </div>
 
-    <h1>{{ event.title }}</h1>
-    <p class="event-meta">{{ event.date|date:"d.m.Y" }} — {{ event.location }}</p>
+    {# ---------- Description ---------- #}
+    <div class="w-full md:w-[75%] mx-auto mt-6 bg-white rounded-lg px-6 py-6 sm:px-10 sm:py-8">
+        <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">{{ event.title }}</h1>
+        <p class="mt-2 text-sm uppercase tracking-widest text-neutral-500">
+            {{ event.date|date:"j E Y" }} — {{ event.location }}
+        </p>
 
-    {% if event.description %}
-    <div class="event-description">
-        {{ event.description|linebreaks }}
+        {% if event.description %}
+        <div class="mt-6 prose prose-neutral max-w-none">
+            {{ event.description|linebreaks }}
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 
+    {# ---------- Distances ---------- #}
     {% if event.distances.exists %}
-    <details class="event-section">
-        <summary>Дистанции</summary>
-        <div class="section-content">
+    <details class="group w-full md:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                         px-6 py-5 sm:px-10 flex items-center justify-between">
+            <span class="text-lg font-semibold tracking-tight">Дистанции</span>
+            <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
+        </summary>
+        <div class="px-6 pb-6 sm:px-10 space-y-8">
             {% for distance in event.distances.all %}
-            <div class="distance-item">
-                <h3>{{ distance.name }} — {{ distance.length_km }} км</h3>
+            <div>
+                <h3 class="font-semibold">{{ distance.name }} — {{ distance.length_km }} км</h3>
                 {% if distance.start_time %}
-                    <p>Старт: {{ distance.start_time|time:"H:i" }}</p>
+                    <p class="mt-1 text-sm text-neutral-600">Старт: {{ distance.start_time|time:"H:i" }}</p>
                 {% endif %}
 
                 {% if distance.route_map_image %}
-                    <img src="{{ distance.route_map_image.url }}" alt="Схема трассы {{ distance.name }}">
+                    <img src="{{ distance.route_map_image.url }}" alt="Схема трассы {{ distance.name }}"
+                         class="mt-3 rounded-md">
                 {% endif %}
 
                 {% if distance.gpx_file %}
-                    <a href="{{ distance.gpx_file.url }}">Скачать GPX трек</a>
-                {% endif %}
-
-                {% if distance.records.exists %}
-                <div class="distance-records">
-                    <h4>Рекорды дистанции</h4>
-                    {% for record in distance.records.all %}
-                    <div class="record-item">
-                        <p>{{ record.get_gender_display }}: {{ record.athlete }} — {{ record.result_time }} ({{ record.year }})</p>
-                        {% if record.photo %}
-                            <img src="{{ record.photo.url }}" alt="{{ record.name }}">
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
+                    <a href="{{ distance.gpx_file.url }}" class="mt-2 inline-block text-sm text-emerald-700 hover:underline">
+                        Скачать GPX трек
+                    </a>
                 {% endif %}
             </div>
             {% endfor %}
@@ -69,29 +75,40 @@
     </details>
     {% endif %}
 
+    {# ---------- Bib pickup ---------- #}
     {% if event.bib_pickup %}
-    <details class="event-section">
-        <summary>Выдача номеров</summary>
-        <div class="section-content">
-            <p><strong>Адрес:</strong> {{ event.bib_pickup.address }}</p>
-            <p><strong>Даты:</strong> {{ event.bib_pickup.date_from|date:"d.m.Y" }} — {{ event.bib_pickup.date_to|date:"d.m.Y" }}</p>
-            <p><strong>Часы работы:</strong> {{ event.bib_pickup.working_hours }}</p>
+    <details class="group w-full md:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                         px-6 py-5 sm:px-10 flex items-center justify-between">
+            <span class="text-lg font-semibold tracking-tight">Выдача номеров</span>
+            <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
+        </summary>
+        <div class="px-6 pb-6 sm:px-10 prose prose-neutral max-w-none">
             {% if event.bib_pickup.description %}
                 {{ event.bib_pickup.description|linebreaks }}
+            {% else %}
+                <p class="text-neutral-500">Информация появится позже.</p>
             {% endif %}
         </div>
     </details>
     {% endif %}
 
+    {# ---------- Schedule ---------- #}
     {% if event.schedule_items.exists %}
-    <details class="event-section">
-        <summary>Программа</summary>
-        <div class="section-content">
-            <ul class="schedule-list">
+    <details class="group w-full md:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                         px-6 py-5 sm:px-10 flex items-center justify-between">
+            <span class="text-lg font-semibold tracking-tight">Программа</span>
+            <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
+        </summary>
+        <div class="px-6 pb-6 sm:px-10">
+            <ul class="space-y-4">
                 {% for item in event.schedule_items.all %}
                 <li>
-                    <strong>{{ item.time|time:"H:i" }}</strong> — {{ item.title }}
-                    {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+                    <span class="font-semibold">{{ item.time|time:"H:i" }}</span> — {{ item.title }}
+                    {% if item.description %}
+                        <p class="mt-1 text-sm text-neutral-600">{{ item.description }}</p>
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -99,37 +116,74 @@
     </details>
     {% endif %}
 
-    {% if event.venue_info %}
-    <details class="event-section">
-        <summary>Как добраться</summary>
-        <div class="section-content">
-            <p><strong>Адрес:</strong> {{ event.venue_info.address }}</p>
-            {% if event.venue_info.directions_text %}
-                {{ event.venue_info.directions_text|linebreaks }}
+    {# ---------- How to get ---------- #}
+    {% if event.venue %}
+    <details class="group w-full md:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                         px-6 py-5 sm:px-10 flex items-center justify-between">
+            <span class="text-lg font-semibold tracking-tight">Как добраться</span>
+            <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
+        </summary>
+        <div class="px-6 pb-6 sm:px-10 prose prose-neutral max-w-none">
+            <p><strong>Адрес:</strong> {{ event.venue.address }}</p>
+            {% if event.venue.directions_text %}
+                {{ event.venue.directions_text|linebreaks }}
             {% endif %}
-            {% if event.venue_info.parking_info %}
+            {% if event.venue.parking_info %}
                 <h4>Парковка</h4>
-                {{ event.venue_info.parking_info|linebreaks }}
+                {{ event.venue.parking_info|linebreaks }}
             {% endif %}
-            {# сюда позже подключим карту по event.venue_info.latitude/longitude #}
+            {# сюда позже подключим карту по event.venue.latitude/longitude #}
         </div>
     </details>
     {% endif %}
 
-    <details class="event-section">
-        <summary>Как это было</summary>
-        <div class="section-content">
-            <p>Галерея скоро появится.</p>
+    {# ---------- How it was ---------- #}
+    <details class="group w-full md:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                         px-6 py-5 sm:px-10 flex items-center justify-between">
+            <span class="text-lg font-semibold tracking-tight">Как это было</span>
+            <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
+        </summary>
+        <div class="px-6 pb-6 sm:px-10">
+            <p class="text-neutral-500">Галерея скоро появится.</p>
             {# сюда позже подключим gallery.MediaItem #}
         </div>
     </details>
 
+    {# ---------- Records ---------- #}
+    <details class="group w-full md:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                         px-6 py-5 sm:px-10 flex items-center justify-between">
+            <span class="text-lg font-semibold tracking-tight">Рекорды</span>
+            <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
+        </summary>
+        <div class="px-6 pb-6 sm:px-10 space-y-6">
+            {% if records %}
+                {% for record in records %}
+                <div class="flex items-center gap-4">
+                    {% if record.photo %}
+                        <img src="{{ record.photo.url }}" alt="{{ record.athlete }}" class="w-14 h-14 rounded-full object-cover">
+                    {% endif %}
+                    <div>
+                        <p class="font-semibold">{{ record.distance.name }} · {{ record.get_gender_display }}</p>
+                        <p class="text-sm text-neutral-600">
+                            {{ record.athlete }} — {{ record.result_time }} ({{ record.date|date:"Y" }})
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </details>
+
+    {# ---------- Partners ---------- #}
     {% if event.partners.exists %}
-    <div class="event-partners">
+    <div class="w-full md:w-[75%] mx-auto mt-12 grid grid-cols-3 sm:grid-cols-6 gap-8 items-center justify-items-center">
         {% for partner in event.partners.all %}
-            <a href="{{ partner.website_url }}" target="_blank" rel="noopener">
-                <img src="{{ partner.logo.url }}" alt="{{ partner.name }}">
-            </a>
+        <a href="{{ partner.website_url }}" target="_blank" rel="noopener" class="opacity-70 hover:opacity-100 transition-opacity">
+            <img src="{{ partner.logo.url }}" alt="{{ partner.name }}" class="h-10 w-auto object-contain">
+        </a>
         {% endfor %}
     </div>
     {% endif %}
