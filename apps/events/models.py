@@ -19,12 +19,12 @@ class Event(models.Model):
     cover_image = models.ImageField(
         'Обложка',
         upload_to='events/covers/',
-        help_text='~1600*2000px, JPG/PNG'
+        help_text='~1000px по ширине, квадрат или 4/5, JPG/PNG'
     )
     home_banner = models.ImageField(
         'Баннер на главной',
         upload_to='events/banners/',
-        help_text='~2000×700px, JPG/PNG, оставь место по краям',
+        help_text='~1900×500px, оставь место по краям, JPG/PNG',
         blank=True
     )
     home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)
@@ -54,7 +54,12 @@ class Distance(models.Model):
     name = models.CharField('Название', max_length=100)
     length_km = models.DecimalField(max_digits=5, decimal_places=2)
     start_time = models.TimeField(null=True, blank=True)
-    route_map_image = models.ImageField('Схема трассы', upload_to='events/routes/', blank=True)
+    route_map_image = models.ImageField(
+        'Схема трассы',
+        upload_to='events/routes/',
+        help_text='~600px по ширине, JPG/PNG',
+        blank=True
+    )
     gpx_file = models.FileField('GPX трек', upload_to='events/gpx', blank=True)
 
     def __str__(self):
@@ -72,7 +77,11 @@ class DistanceRecord(models.Model):
     athlete = models.CharField('Имя спортсмена', max_length=100)
     result_time = models.DurationField('Результат')
     date = models.DateField('Дата')
-    photo = models.ImageField('Фото', upload_to='events/records/', blank=True)
+    photo = models.ImageField(
+        'Фото',
+        upload_to='events/records/',
+        help_text='~400px по ширине, 3/4, JPG/PNG',
+        blank=True)
 
     class Meta:
         unique_together = [('distance', 'gender')]  # one record for gender
@@ -116,6 +125,12 @@ class VenueInfo(models.Model):
     longitude = models.DecimalField('Долгота', max_digits=9, decimal_places=6, blank=True, null=True)
     directions_text = models.TextField('Как добраться', blank=True)
     parking_info = models.TextField('Парковка', blank=True)
+    start_map_image = models.ImageField(
+        'Схема стартового городка',
+        upload_to='events/routes/',
+        help_text='~480px по ширине, JPG/PNG',
+        blank=True
+    )
 
     class Meta:
         verbose_name = 'Инфо о месте старта'
