@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Support your local{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
 <body class="min-h-screen flex flex-col bg-stone-100 text-neutral-900">
 
@@ -28,14 +28,20 @@
     <footer class="border-t border-neutral-200 py-8 px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             <a href="#" aria-label="Telegram" class="group block w-5 h-5">
-                <span class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
-                             [mask-image:url('{% static "img/icons/tg.svg" %}')] [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
-                             [-webkit-mask-image:url('{% static "icons/telegram.svg" %}')] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]"></span>
+                <span
+                    style="mask-image:url('{% static "img/icons/tg.svg" %}'); -webkit-mask-image:url('{% static "img/icons/tg.svg" %}');"
+                    class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
+                    [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
+                    [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
+                </span>
             </a>
             <a href="#" aria-label="VK" class="group block w-5 h-5">
-                <span class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
-                             [mask-image:url('{% static "img/icons/vk.svg" %}')] [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
-                             [-webkit-mask-image:url('{% static "icons/vk.svg" %}')] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]"></span>
+                <span
+                    style="mask-image:url('{% static "img/icons/vk.svg" %}'); -webkit-mask-image:url('{% static "img/icons/vk.svg" %}');"
+                    class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
+                    [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
+                    [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
+                </span>
             </a>
             <a href="mailto:run@eseninbeg.ru" class="text-sm text-neutral-500 hover:text-neutral-900">
                 run@eseninbeg.ru

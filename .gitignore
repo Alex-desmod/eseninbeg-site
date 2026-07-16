@@ -15,6 +15,9 @@ dist/
 db.sqlite3
 media/
 
+#frontend
+node_modules/
+
 # IDE
 .idea/
 .vscode/
@@ -24,3 +27,4 @@ media/
 
 # Windows
 Thumbs.db
+

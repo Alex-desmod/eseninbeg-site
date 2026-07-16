@@ -8,9 +8,12 @@
 
 <div class="px-6 pt-6">
     <a href="{% url 'core:home' %}" aria-label="На главную" class="group inline-block w-6 h-6 md:w-8 md:h-8">
-        <span class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
-                     [mask-image:url('{% static "img/icons/home.svg" %}')] [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
-                     [-webkit-mask-image:url('{% static "img/icons/home.svg" %}')] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]"></span>
+        <span
+            style="mask-image:url('{% static "img/icons/home.svg" %}'); -webkit-mask-image:url('{% static "img/icons/home.svg" %}');"
+            class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
+            [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
+            [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
+        </span>
     </a>
 </div>
 
