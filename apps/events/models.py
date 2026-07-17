@@ -10,9 +10,40 @@ class Event(models.Model):
         ('past', 'прошедшее')
     ]
 
+    WEEKDAY_CHOICES = [
+        (0, 'Понедельник'),
+        (1, 'Вторник'),
+        (2, 'Среда'),
+        (3, 'Четверг'),
+        (4, 'Пятница'),
+        (5, 'Суббота'),
+        (6, 'Воскресенье'),
+    ]
+
+    WEEKDAY_PHRASES = {
+        0: 'Каждый понедельник',
+        1: 'Каждый вторник',
+        2: 'Каждую среду',
+        3: 'Каждый четверг',
+        4: 'Каждую пятницу',
+        5: 'Каждую субботу',
+        6: 'Каждое воскресенье',
+    }
+
     title = models.CharField('Название', max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     date = models.DateField('Дата', blank=True, null=True)
+    is_recurring = models.BooleanField('Периодическое событие', default=False)
+    recurrence_weekday = models.PositiveSmallIntegerField(
+        'День недели', choices=WEEKDAY_CHOICES, blank=True, null=True
+    )
+    recurrence_text = models.CharField(
+        'Текст расписания (переопределение)',
+        max_length=100,
+        blank=True,
+        help_text='Если пусто — сформируется автоматически, например "Каждую субботу". '
+                  'Заполни вручную для нестандартных случаев ("Каждую 1-ю субботу месяца").'
+    )
     location = models.CharField('Место', max_length=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='upcoming')
     description = models.TextField('Описание', blank=True)
@@ -39,6 +70,15 @@ class Event(models.Model):
 
     class Meta:
         ordering = ['home_order', 'date']
+
+    @property
+    def schedule_display(self):
+        if self.is_recurring:
+            if self.recurrence_text:
+                return self.recurrence_text
+            if self.recurrence_weekday is not None:
+                return self.WEEKDAY_PHRASES[self.recurrence_weekday]
+        return ''
 
     def save(self, *args, **kwargs):
         if not self.slug:

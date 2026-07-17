@@ -46,7 +46,13 @@
     <div class="w-[90%] md:w-[75%] mx-auto mt-6 bg-white rounded-lg px-6 py-6 sm:px-10 sm:py-8">
         <h1 class="text-xl sm:text-2xl font-normal uppercase tracking-tight">{{ event.title }}</h1>
         <p class="mt-2 text-sm uppercase tracking-widest text-neutral-500">
+            {% if event.date %}
             {{ event.date|date:"j E Y" }}
+            {% if event.is_reccuring %}
+            {{ event.schedule_display }}
+            {% else %}
+            Скоро
+            {% endif %}
         </p>
 
         {% if event.description %}

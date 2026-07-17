@@ -19,6 +19,8 @@
             <p class="mt-2 text-xs sm:text-sm uppercase tracking-widest text-white/80">
                 {% if event.date %}
                 {{ event.date|date:"j E Y" }}
+                {% if event.is_reccuring %}
+                {{ event.schedule_display }}
                 {% else %}
                 Скоро
                 {% endif %}

@@ -27,7 +27,7 @@
 
     <footer class="border-t border-neutral-200 py-8 px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">
-            <a href="#" aria-label="Telegram" class="group block w-5 h-5">
+            <a href="{{ site_settings.tg_url }}" aria-label="Telegram" class="group block w-5 h-5">
                 <span
                     style="mask-image:url('{% static "img/icons/tg.svg" %}'); -webkit-mask-image:url('{% static "img/icons/tg.svg" %}');"
                     class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
@@ -35,7 +35,7 @@
                     [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
                 </span>
             </a>
-            <a href="#" aria-label="VK" class="group block w-5 h-5">
+            <a href="{{ site_settings.vk_url }}" aria-label="VK" class="group block w-5 h-5">
                 <span
                     style="mask-image:url('{% static "img/icons/vk.svg" %}'); -webkit-mask-image:url('{% static "img/icons/vk.svg" %}');"
                     class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
@@ -43,7 +43,7 @@
                     [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
                 </span>
             </a>
-            <a href="mailto:run@eseninbeg.ru" class="text-sm text-neutral-500 hover:text-neutral-900">
+            <a href="mailto:{{ site_settings.email }}" class="text-sm text-neutral-500 hover:text-neutral-900">
                 run@eseninbeg.ru
             </a>
         </div>
