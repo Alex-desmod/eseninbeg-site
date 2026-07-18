@@ -6,7 +6,7 @@
 <div class="flex flex-col items-center gap-2 py-6 px-4">
     {% for event in events %}
     <a href="{% url 'events:detail' slug=event.slug %}"
-       class="group relative w-[90%] h-48 sm:h-56 md:h-60 flex items-center overflow-hidden rounded-lg">
+       class="group relative w-[90%] h-48 sm:h-56 md:h-64 flex items-center overflow-hidden rounded-lg">
 
         <div class="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105"
              style="background-image: url('{% if event.home_banner %}{{ event.home_banner.url }}{% else %}{{ event.cover_image.url }}{% endif %}');">

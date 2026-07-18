@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import Event, Distance, DistanceRecord, ScheduleItem, BibPickupInfo, VenueInfo
+from ..gallery.models import MediaItem
+
 
 # Register your models here.
 class DistanceInline(admin.TabularInline):
@@ -24,6 +26,13 @@ class VenueInfoInline(admin.StackedInline):
     max_num = 1
 
 
+class MediaItemInline(admin.TabularInline):
+    model = MediaItem
+    extra = 1
+    fields = ['media_type', 'image', 'video_embed_url', 'caption', 'order']
+
+
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ['home_order', 'title', 'date', 'location', 'status']
@@ -31,7 +40,7 @@ class EventAdmin(admin.ModelAdmin):
     list_editable = ['home_order']
     prepopulated_fields = {'slug': ('title',)}
     filter_horizontal = ['partners']
-    inlines = [DistanceInline, ScheduleItemInline, BibPickupInfoInline, VenueInfoInline]
+    inlines = [DistanceInline, ScheduleItemInline, BibPickupInfoInline, VenueInfoInline, MediaItemInline]
 
 
 @admin.register(DistanceRecord)
