@@ -55,7 +55,7 @@ class Event(models.Model):
     home_banner = models.ImageField(
         'Баннер на главной',
         upload_to='events/banners/',
-        help_text='~1900×500px, оставь место по краям, JPG/PNG',
+        help_text='~1900×300px, оставь место по краям и около 30% слева, JPG/PNG',
         blank=True
     )
     home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)

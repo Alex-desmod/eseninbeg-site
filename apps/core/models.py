@@ -8,8 +8,8 @@ class SiteSettings(models.Model):
     vk_url = models.URLField('VK', blank=True)
 
     class Meta:
-        verbose_name = 'Настройки сайта'
-        verbose_name_plural = 'Настройки сайта'
+        verbose_name = 'Контакты зачинщиков'
+        verbose_name_plural = 'Контакты зачинщиков'
 
     def __str__(self):
         return 'Настройки сайта'

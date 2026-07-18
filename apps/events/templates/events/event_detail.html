@@ -48,7 +48,7 @@
         <p class="mt-2 text-sm uppercase tracking-widest text-neutral-500">
             {% if event.date %}
             {{ event.date|date:"j E Y" }}
-            {% if event.is_reccuring %}
+            {% elif event.is_recurring %}
             {{ event.schedule_display }}
             {% else %}
             Скоро
@@ -200,8 +200,6 @@
                     </div>
                     {% endif %}
                 {% endfor %}
-            {% else %}
-                <p class="text-neutral-500">Рекорды пока не установлены.</p>
             {% endif %}
         </div>
     </details>
