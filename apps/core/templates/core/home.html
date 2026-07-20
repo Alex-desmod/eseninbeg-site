@@ -6,17 +6,17 @@
 <div class="flex flex-col items-center gap-2 py-6 px-4">
     {% for event in events %}
     <a href="{% url 'events:detail' slug=event.slug %}"
-       class="group relative w-[90%] h-72 xl:h-64 flex items-center overflow-hidden rounded-lg">
+       class="group relative w-[90%] h-56 md:h-72 xl:h-64 flex items-center overflow-hidden rounded-lg">
 
         <div class="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105"
              style="background-image: url('{% if event.home_banner %}{{ event.home_banner.url }}{% else %}{{ event.cover_image.url }}{% endif %}');">
         </div>
 
-        <div class="relative ml-2 sm:ml-4 h-[90%] w-[40%] sm:h-[85%] sm:w-[30%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md">
-            <h2 class="mb-4 text-lg sm:text-3xl md:text-4xl uppercase font-semibold tracking-tight text-white leading-snug">
+        <div class="relative ml-2 md:ml-4 h-[90%] w-[40%] md:h-[85%] md:w-[30%] xl:w-[25%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md">
+            <h2 class="mb-4 text-lg md:text-4xl uppercase font-semibold tracking-tight text-white leading-snug">
                 {{ event.title }}
             </h2>
-            <p class="mt-2 text-xs sm:text-sm uppercase tracking-widest text-white/80">
+            <p class="mt-2 text-xs md:text-base uppercase tracking-widest text-white/80">
                 {% if event.date %}
                 {{ event.date|date:"j E Y" }}
                 {% elif event.is_recurring %}
