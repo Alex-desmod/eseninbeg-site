@@ -58,6 +58,12 @@ class Event(models.Model):
         help_text='~1900×300px, оставь место по краям, JPG/PNG',
         blank=True
     )
+    bottom_image = models.ImageField(
+        'Картинка внизу страницы',
+        upload_to='events/covers/',
+        help_text='~400px по ширине, PNG с прозрачным фоном',
+        blank=True
+    )
     home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)
     registration_url = models.URLField('Ссылка на регистрацию', blank=True)
     results_url = models.URLField('Ссылка на результаты', blank=True)

@@ -10,7 +10,7 @@ class MediaItem(models.Model):
         ('photo', 'Фото'),
         ('video', 'Видео'),
     ]
-    MAX_PHOTOS_PER_EVENT = 30
+    MAX_PHOTOS_PER_EVENT = 32
 
     event = models.ForeignKey(Event, related_name='media_items', on_delete=models.CASCADE)
     media_type = models.CharField('Тип', max_length=10, choices=TYPE_CHOICES)
