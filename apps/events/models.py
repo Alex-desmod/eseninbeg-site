@@ -65,6 +65,11 @@ class Event(models.Model):
         blank=True
     )
     home_order = models.PositiveSmallIntegerField('Порядок на главной', default=0)
+    waitlist_enabled = models.BooleanField(
+        'Лист ожидания',
+        default=False,
+        help_text='Показывать кнопку записи в лист ожидания на странице события'
+    )
     registration_url = models.URLField('Ссылка на регистрацию', blank=True)
     results_url = models.URLField('Ссылка на результаты', blank=True)
     partners = models.ManyToManyField(
@@ -184,4 +189,23 @@ class VenueInfo(models.Model):
 
     def __str__(self):
         return f'Как добраться: {self.event.title}'
+
+
+class WaitlistEntry(models.Model):
+    event = models.ForeignKey(Event, related_name='waitlist_entries', on_delete=models.CASCADE)
+    full_name = models.CharField('ФИО', max_length=200)
+    phone = models.CharField('Телефон', max_length=20)
+    email = models.EmailField('Email')
+    created_at = models.DateTimeField('Дата записи', auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Запись в лист ожидания'
+        verbose_name_plural = 'Лист ожидания'
+        constraints = [
+            models.UniqueConstraint(fields=['event', 'email'], name='unique_waitlist_entry')
+        ]
+
+    def __str__(self):
+        return f'{self.full_name} — {self.event.title}'
 

@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Support your local{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
 </head>
-<body class="min-h-screen flex flex-col bg-stone-100 text-neutral-900">
+<body class="min-h-screen flex flex-col bg-stone-200 text-neutral-900">
 
-    <header class="h-32 md:h-40 xl:h-24 flex items-center justify-between px-6 border-b border-neutral-200">
+    <header class="h-32 md:h-40 xl:h-24 flex items-center justify-between px-6 border-b border-neutral-300">
         <div class="flex items-center gap-2 w-[25%]">
             {# сюда позже — картинка-логотип #}
             <span class="font-semibold tracking-tight text-lg">Support your local</span>
@@ -25,7 +26,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="border-t border-neutral-200 py-8 px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer class="border-t border-neutral-300 py-8 px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             {% if site_settings.tg_url %}
             <a href="{{ site_settings.tg_url }}" aria-label="Telegram" class="group block w-5 h-5">

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, Distance, DistanceRecord, ScheduleItem, BibPickupInfo, VenueInfo
+from .models import Event, Distance, DistanceRecord, ScheduleItem, BibPickupInfo, VenueInfo, WaitlistEntry
 from ..gallery.models import MediaItem
 
 
@@ -35,9 +35,9 @@ class MediaItemInline(admin.TabularInline):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ['home_order', 'title', 'date', 'location', 'status']
+    list_display = ['home_order', 'title', 'date', 'location', 'status', 'waitlist_enabled']
     list_display_links = ['title']
-    list_editable = ['home_order']
+    list_editable = ['home_order', 'waitlist_enabled']
     prepopulated_fields = {'slug': ('title',)}
     filter_horizontal = ['partners']
     inlines = [DistanceInline, ScheduleItemInline, BibPickupInfoInline, VenueInfoInline, MediaItemInline]
@@ -47,3 +47,10 @@ class EventAdmin(admin.ModelAdmin):
 class DistanceRecordAdmin(admin.ModelAdmin):
     list_display = ['distance', 'gender', 'athlete', 'result_time', 'date']
     list_filter = ['distance__event', 'gender']
+
+
+@admin.register(WaitlistEntry)
+class WaitlistEntryAdmin(admin.ModelAdmin):
+    list_display = ['full_name', 'phone', 'email', 'event', 'created_at']
+    list_filter = ['event']
+    readonly_fields = ['created_at']

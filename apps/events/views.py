@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.db import IntegrityError
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
 from .models import Event, DistanceRecord
+from .forms import WaitlistForm
 
 
 # Create your views here.
@@ -17,3 +19,23 @@ class EventDetailView(DetailView):
             distance__event=self.object
         ).select_related('distance')
         return context
+
+
+def waitlist_form(request, slug):
+    event = get_object_or_404(Event, slug=slug, waitlist_enabled=True)
+
+    if request.method == 'POST':
+        form = WaitlistForm(request.POST, event=event)
+        if form.is_valid():
+            entry = form.save(commit=False)
+            entry.event = event
+            try:
+                entry.save()
+            except IntegrityError:
+                form.add_error('email', 'С этим email уже есть запись в лист ожидания на это событие')
+                return render(request, 'events/partials/waitlist_form.html', {'form': form, 'event': event})
+            return render(request, 'events/partials/waitlist_success.html', {'event': event})
+        return render(request, 'events/partials/waitlist_form.html', {'form': form, 'event': event})
+
+    form = WaitlistForm(event=event)
+    return render(request, 'events/partials/waitlist_form.html', {'form': form, 'event': event})

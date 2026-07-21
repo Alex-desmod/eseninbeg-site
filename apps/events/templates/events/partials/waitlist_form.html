@@ -1,0 +1,87 @@
+<form hx-post="{% url 'events:waitlist' slug=event.slug %}"
+      hx-target="#waitlist-modal-content"
+      hx-swap="innerHTML"
+      class="space-y-4">
+    {% csrf_token %}
+    <h3 class="text-lg font-semibold">Запись в лист ожидания</h3>
+    <p class="text-sm text-neutral-500">{{ event.title }}</p>
+
+    {# honeypot #}
+    <div class="absolute -left-[9999px] top-0" aria-hidden="true">
+        <label for="{{ form.website.id_for_label }}">Оставьте это поле пустым</label>
+        <input type="text"
+               id="{{ form.website.id_for_label }}"
+               name="{{ form.website.html_name }}"
+               tabindex="-1"
+               autocomplete="off">
+    </div>
+
+    <div>
+        <label class="block text-sm mb-1" for="{{ form.full_name.id_for_label }}">ФИО</label>
+        <input type="text"
+               id="{{ form.full_name.id_for_label }}"
+               name="{{ form.full_name.html_name }}"
+               value="{{ form.full_name.value|default:'' }}"
+               placeholder="Иван Иванович Иванов"
+               class="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-neutral-500">
+        {% if form.full_name.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.full_name.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <label class="block text-sm mb-1" for="{{ form.phone.id_for_label }}">Телефон</label>
+        <input type="text"
+               id="{{ form.phone.id_for_label }}"
+               name="{{ form.phone.html_name }}"
+               value="{{ form.phone.value|default:'' }}"
+               placeholder="+7 900 000-00-00"
+               class="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-neutral-500">
+        {% if form.phone.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.phone.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <label class="block text-sm mb-1" for="{{ form.email.id_for_label }}">Email</label>
+        <input type="email"
+               id="{{ form.email.id_for_label }}"
+               name="{{ form.email.html_name }}"
+               value="{{ form.email.value|default:'' }}"
+               placeholder="you@example.com"
+               class="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-neutral-500">
+        {% if form.email.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.email.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <div class="flex items-start gap-2">
+            <input type="checkbox"
+                   id="{{ form.consent.id_for_label }}"
+                   name="{{ form.consent.html_name }}"
+                   {% if form.consent.value %}checked{% endif %}
+                   class="mt-0.5">
+            <label for="{{ form.consent.id_for_label }}" class="text-xs text-neutral-600">
+                Согласен(на) на обработку персональных данных в соответствии с
+                <a href="{% url 'core:privacy' %}" target="_blank" rel="noopener" class="underline hover:text-neutral-900">
+                    Политикой конфиденциальности
+                </a>
+            </label>
+        </div>
+        {% if form.consent.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.consent.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <div class="flex justify-end gap-2 pt-2">
+        <button type="button" onclick="document.getElementById('waitlist-dialog').close()"
+                class="text-base text-neutral-500 uppercase hover:text-neutral-900">
+            Отмена
+        </button>
+        <button type="submit"
+                class="bg-emerald-600 text-white text-base uppercase px-4 py-2 rounded-md hover:bg-emerald-800">
+            Записаться
+        </button>
+    </div>
+</form>
