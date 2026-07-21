@@ -27,6 +27,7 @@
 
     <footer class="border-t border-neutral-200 py-8 px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">
+            {% if site_settings.tg_url %}
             <a href="{{ site_settings.tg_url }}" aria-label="Telegram" class="group block w-5 h-5">
                 <span
                     style="mask-image:url('{% static "img/icons/tg.svg" %}'); -webkit-mask-image:url('{% static "img/icons/tg.svg" %}');"
@@ -35,6 +36,8 @@
                     [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
                 </span>
             </a>
+            {% endif %}
+            {% if site_settings.vk_url %}
             <a href="{{ site_settings.vk_url }}" aria-label="VK" class="group block w-5 h-5">
                 <span
                     style="mask-image:url('{% static "img/icons/vk.svg" %}'); -webkit-mask-image:url('{% static "img/icons/vk.svg" %}');"
@@ -43,9 +46,12 @@
                     [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
                 </span>
             </a>
+            {% endif %}
+            {% if site_settings.email %}
             <a href="mailto:{{ site_settings.email }}" class="text-base xl:text-sm text-neutral-500 hover:text-neutral-900">
-                run@eseninbeg.ru
+                {{ site_settings.email }}
             </a>
+            {% endif %}
         </div>
         <div class="flex items-center gap-2">
             <p class="text-base xl:text-sm text-neutral-500">{% now "Y" %} | built with ♡</p>
