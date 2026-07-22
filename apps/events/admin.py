@@ -1,3 +1,5 @@
+from import_export import resources
+from import_export.admin import ExportMixin
 from django.contrib import admin
 from .models import Event, Distance, DistanceRecord, ScheduleItem, BibPickupInfo, VenueInfo, WaitlistEntry
 from ..gallery.models import MediaItem
@@ -49,8 +51,14 @@ class DistanceRecordAdmin(admin.ModelAdmin):
     list_filter = ['distance__event', 'gender']
 
 
+class WaitlistEntryResource(resources.ModelResource):
+    class Meta:
+        model = WaitlistEntry
+
+
 @admin.register(WaitlistEntry)
-class WaitlistEntryAdmin(admin.ModelAdmin):
+class WaitlistEntryAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = WaitlistEntryResource
     list_display = ['full_name', 'phone', 'email', 'event', 'created_at']
     list_filter = ['event']
     readonly_fields = ['created_at']

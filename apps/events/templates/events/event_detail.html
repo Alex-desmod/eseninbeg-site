@@ -10,7 +10,7 @@
     <a href="{% url 'core:home' %}" aria-label="На главную" class="group inline-block w-6 h-6 md:w-12 md:h-12 xl:w-8 xl:h-8">
         <span
             style="mask-image:url('{% static "img/icons/home.svg" %}'); -webkit-mask-image:url('{% static "img/icons/home.svg" %}');"
-            class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
+            class="block w-full h-full bg-neutral-500 group-hover:bg-brand-dark transition-colors
             [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
             [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
         </span>
@@ -87,13 +87,13 @@
 
     {# ---------- Distances ---------- #}
     {% if event.distances.exists %}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
-                         px-6 py-5 md:px-10 flex items-center justify-between">
-            <span class="text-lg md:text-2xl font-bold uppercase tracking-tight">Дистанции</span>
+                         px-6 py-2 md:px-10 flex items-center justify-between">
+            <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Дистанции</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="px-6 pb-6 md:px-10 space-y-8">
+        <div class="bg-white rounded-lg mt-2 px-6 py-6">
             {% for distance in event.distances.all %}
             <div>
                 <h3 class="font-semibold">{{ distance.name }}</h3>
@@ -116,13 +116,13 @@
 
     {# ---------- Bib pickup ---------- #}
     {% if event.bib_pickup %}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
-                         px-6 py-5 md:px-10 flex items-center justify-between">
-            <span class="text-lg md:text-2xl font-bold uppercase tracking-tight">Выдача номеров</span>
+                         px-6 py-2 md:px-10 flex items-center justify-between">
+            <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Выдача номеров</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="px-6 pb-6 md:px-10 prose prose-neutral max-w-none">
+        <div class="bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
             {% if event.bib_pickup.description %}
                 {{ event.bib_pickup.description|linebreaks }}
             {% else %}
@@ -134,13 +134,13 @@
 
     {# ---------- Schedule ---------- #}
     {% if event.schedule_items.exists %}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
-                         px-6 py-5 md:px-10 flex items-center justify-between">
-            <span class="text-lg md:text-2xl font-bold uppercase tracking-tight">Программа</span>
+                         px-6 py-2 md:px-10 flex items-center justify-between">
+            <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Программа</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="px-6 pb-6 md:px-10">
+        <div class="bg-white rounded-lg mt-2 px-6 py-6">
             <ul class="space-y-4">
                 {% for item in event.schedule_items.all %}
                 <li>
@@ -157,13 +157,13 @@
 
     {# ---------- How to get ---------- #}
     {% if event.venue %}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
-                         px-6 py-5 md:px-10 flex items-center justify-between">
-            <span class="text-lg md:text-2xl font-bold uppercase tracking-tight">Как добраться</span>
+                         px-6 py-2 md:px-10 flex items-center justify-between">
+            <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Как добраться</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="px-6 pb-6 md:px-10 prose prose-neutral max-w-none">
+        <div class="bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
             <p><strong>Адрес:</strong> {{ event.venue.address }}</p>
             {% if event.venue.directions_text %}
                 {{ event.venue.directions_text|linebreaks }}
@@ -182,13 +182,13 @@
     {% endif %}
 
     {# ---------- How it was ---------- #}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
-                         px-6 py-5 md:px-10 flex items-center justify-between">
-            <span class="text-lg md:text-2xl font-bold uppercase tracking-tight">Как это было</span>
+                         px-6 py-2 md:px-10 flex items-center justify-between">
+            <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Как это было</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="px-6 pb-6 md:px-10">
+        <div class="bg-white rounded-lg mt-2 px-6 py-6">
             {% if event.media_items.exists %}
 
             {% for item in event.media_items.all %}
@@ -242,13 +242,13 @@
     <script src="{% static 'js/gallery-lightbox.js' %}" defer></script>
 
     {# ---------- Records ---------- #}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-4 bg-white rounded-lg">
+    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
-                         px-6 py-5 md:px-10 flex items-center justify-between">
-            <span class="text-lg md:text-2xl font-bold uppercase tracking-tight">Зал славы</span>
+                         px-6 py-2 md:px-10 flex items-center justify-between">
+            <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Зал славы</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="px-6 pb-6 md:px-10 space-y-10">
+        <div class="bg-white rounded-lg mt-2 px-6 py-6 space-y-10">
             {% if records %}
                 {% for distance in event.distances.all %}
                     {% if distance.records.exists %}

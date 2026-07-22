@@ -1,5 +1,58 @@
 @import "tailwindcss";
 
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter-Variable.woff2") format("woff2");
+    weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url("../fonts/Inter-Italic-Variable.woff2") format("woff2");
+    weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Rodchenko";
+    src: url("../fonts/Rodchenko-Bold.woff2") format("woff2");
+    weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Rodchenko";
+    src: url("../fonts/Rodchenko-Regular.woff2") format("woff2");
+    weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Rodchenko";
+    src: url("../fonts/Rodchenko-Light.woff2") format("woff2");
+    weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Rodchenko Inline";
+    src: url("../fonts/Rodchenko-Inline.woff2") format("woff2");
+    weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 @theme {
-    --color-background: #c4bab0;
+    --font-sans: "Inter", sans-serif;
+    --font-race: "Rodchenko Inline", sans-serif;
+    --font-heading: "Rodchenko", sans-serif;
+    --color-brand-light: #dacec4;
+    --color-brand-medium: #a99577;
+    --color-brand-dark: #735c4b;
 }

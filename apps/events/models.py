@@ -192,6 +192,8 @@ class VenueInfo(models.Model):
 
 
 class WaitlistEntry(models.Model):
+    MAX_ENTRIES_PER_EVENT = 1000
+
     event = models.ForeignKey(Event, related_name='waitlist_entries', on_delete=models.CASCADE)
     full_name = models.CharField('ФИО', max_length=200)
     phone = models.CharField('Телефон', max_length=20)

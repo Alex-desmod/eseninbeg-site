@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
-from .models import Event, DistanceRecord
+from .models import Event, DistanceRecord, WaitlistEntry
 from .forms import WaitlistForm
 
 
@@ -27,6 +27,9 @@ def waitlist_form(request, slug):
     if request.method == 'POST':
         form = WaitlistForm(request.POST, event=event)
         if form.is_valid():
+            if event.waitlist_entries.count() >= WaitlistEntry.MAX_ENTRIES_PER_EVENT:
+                return render(request, 'events/partials/waitlist_full.html', {'event': event})
+
             entry = form.save(commit=False)
             entry.event = event
             try:
@@ -34,8 +37,12 @@ def waitlist_form(request, slug):
             except IntegrityError:
                 form.add_error('email', 'С этим email уже есть запись в лист ожидания на это событие')
                 return render(request, 'events/partials/waitlist_form.html', {'form': form, 'event': event})
+
             return render(request, 'events/partials/waitlist_success.html', {'event': event})
         return render(request, 'events/partials/waitlist_form.html', {'form': form, 'event': event})
+
+    if event.waitlist_entries.count() >= WaitlistEntry.MAX_ENTRIES_PER_EVENT:
+        return render(request, 'events/partials/waitlist_full.html', {'event': event})
 
     form = WaitlistForm(event=event)
     return render(request, 'events/partials/waitlist_form.html', {'form': form, 'event': event})
