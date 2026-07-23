@@ -6,6 +6,24 @@
 
 {% block content %}
 
+<style>
+    .record-photo { position: relative; overflow: hidden; }
+    .record-photo .shine-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.55) 50%, transparent 60%);
+        transform: translateX(-120%);
+        pointer-events: none;
+    }
+    .record-photo.shine-play .shine-overlay {
+        animation: shine-sweep 0.9s ease-out;
+    }
+    @keyframes shine-sweep {
+        from { transform: translateX(-120%); }
+        to { transform: translateX(120%); }
+    }
+</style>
+
 <div class="px-6 pt-6">
     <a href="{% url 'core:home' %}" aria-label="На главную" class="group inline-block w-6 h-6 md:w-12 md:h-12 xl:w-8 xl:h-8">
         <span
@@ -240,10 +258,11 @@
 
     <script src="{% static 'js/gallery-lightbox.js' %}" defer></script>
     <script src="{% static 'js/details-accordion.js' %}" defer></script>
+    <script src="{% static 'js/records-shine.js' %}" defer></script>
 
     {# ---------- Records ---------- #}
     {% if records %}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
+    <details id="records-details" class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
                          px-6 py-2 md:px-10 flex items-center justify-between">
             <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Зал славы</span>
@@ -258,12 +277,16 @@
                             {% for record in distance.records.all|dictsort:"gender" %}
                             <div>
                                 {% if record.photo %}
+                                <div class="record-photo w-full md:max-w-[300px] xl:max-w-[250px] mx-auto aspect-[3/4] rounded-md">
                                     <img src="{{ record.photo.url }}" alt="{{ record.athlete }}"
-                                         class="w-full md:max-w-[300px] xl:max-w-[250px] mx-auto aspect-[3/4] object-cover rounded-md">
-                                {% endif %}
+                                         class="w-full h-full object-cover rounded-md">
+                                    <span class="shine-overlay"></span>
+                                </div>
+
                                 <p class="text-sm text-center text-neutral-600">
                                     {{ record.athlete }} - {{ record.result_time }} ({{ record.date|date:"Y" }})
                                 </p>
+                                {% endif %}
                             </div>
                             {% endfor %}
                         </div>

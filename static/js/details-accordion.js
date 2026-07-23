@@ -1,5 +1,4 @@
-// Плавное открытие/закрытие <details> через анимацию высоты (Web Animations API).
-// Без сторонних библиотек, работает с любым количеством блоков на странице.
+// smooth opening/closing <details> (Web Animations API).
 
 class SmoothDetails {
     constructor(el) {
