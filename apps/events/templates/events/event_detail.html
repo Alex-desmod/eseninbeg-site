@@ -93,7 +93,7 @@
             <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Дистанции</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="bg-white rounded-lg mt-2 px-6 py-6">
+        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6">
             {% for distance in event.distances.all %}
             <div>
                 <h3 class="font-semibold">{{ distance.name }}</h3>
@@ -122,7 +122,7 @@
             <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Выдача номеров</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
+        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
             {% if event.bib_pickup.description %}
                 {{ event.bib_pickup.description|linebreaks }}
             {% else %}
@@ -140,7 +140,7 @@
             <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Программа</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="bg-white rounded-lg mt-2 px-6 py-6">
+        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6">
             <ul class="space-y-4">
                 {% for item in event.schedule_items.all %}
                 <li>
@@ -163,7 +163,7 @@
             <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Как добраться</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
+        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
             <p><strong>Адрес:</strong> {{ event.venue.address }}</p>
             {% if event.venue.directions_text %}
                 {{ event.venue.directions_text|linebreaks }}
@@ -182,15 +182,14 @@
     {% endif %}
 
     {# ---------- How it was ---------- #}
+    {% if event.media_items.exists %}
     <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
                          px-6 py-2 md:px-10 flex items-center justify-between">
             <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Как это было</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="bg-white rounded-lg mt-2 px-6 py-6">
-            {% if event.media_items.exists %}
-
+        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6">
             {% for item in event.media_items.all %}
                 {% if item.media_type == 'video' %}
                 <div class="max-w-2xl mx-auto mb-6">
@@ -218,9 +217,9 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            {% endif %}
         </div>
     </details>
+    {% endif %}
 
     {# ---------- Lightbox ---------- #}
     <div id="lightbox" class="fixed inset-0 z-[60] bg-black/90 items-center justify-center px-4" style="display:none;">
@@ -240,18 +239,19 @@
     </div>
 
     <script src="{% static 'js/gallery-lightbox.js' %}" defer></script>
+    <script src="{% static 'js/details-accordion.js' %}" defer></script>
 
     {# ---------- Records ---------- #}
+    {% if records %}
     <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
                          px-6 py-2 md:px-10 flex items-center justify-between">
             <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Зал славы</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
-        <div class="bg-white rounded-lg mt-2 px-6 py-6 space-y-10">
-            {% if records %}
-                {% for distance in event.distances.all %}
-                    {% if distance.records.exists %}
+        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6 space-y-10">
+            {% for distance in event.distances.all %}
+                {% if distance.records.exists %}
                     <div>
                         <h3 class="text-center font-semibold mb-4">{{ distance.name }}</h3>
                         <div class="grid grid-cols-2 gap-6 md:gap-8">
@@ -268,11 +268,11 @@
                             {% endfor %}
                         </div>
                     </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
+                {% endif %}
+            {% endfor %}
         </div>
     </details>
+    {% endif %}
 
     {# ---------- Bottom image ---------- #}
     {% if event.bottom_image %}
