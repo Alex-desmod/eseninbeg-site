@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
+    'axes',
     'apps.events',
     'apps.partners',
     'apps.core',
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -103,6 +105,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Authentication attempts limits
+AXES_FAILURE_LIMIT = 5              # max failure attempts
+AXES_COOLOFF_TIME = 1               # blocking time (hours)
+AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
