@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}404: This page could not be found.{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+</head>
+<body class="min-h-screen flex items-center justify-center bg-stone-200 text-neutral-900 px-6">
+
+    <div class="flex items-center gap-6">
+        <span class="font-heading font-light text-6xl md:text-7xl leading-none">404</span>
+        <span class="w-px h-16 md:h-20 bg-neutral-400"></span>
+        <p class="font-sans text-base md:text-lg">This page could not be found.</p>
+    </div>
+
+    {# сюда позже — картинка на фон #}
+
+</body>
+</html>
