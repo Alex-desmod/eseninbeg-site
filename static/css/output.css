@@ -317,6 +317,9 @@
   .inline-block {
     display: inline-block;
   }
+  .aspect-\[3\/1\] {
+    aspect-ratio: 3/1;
+  }
   .aspect-\[3\/4\] {
     aspect-ratio: 3/4;
   }
@@ -341,11 +344,11 @@
   .h-32 {
     height: calc(var(--spacing) * 32);
   }
-  .h-56 {
-    height: calc(var(--spacing) * 56);
-  }
   .h-\[90\%\] {
     height: 90%;
+  }
+  .h-\[95\%\] {
+    height: 95%;
   }
   .h-auto {
     height: auto;
@@ -374,8 +377,8 @@
   .w-\[25\%\] {
     width: 25%;
   }
-  .w-\[40\%\] {
-    width: 40%;
+  .w-\[30\%\] {
+    width: 30%;
   }
   .w-\[50\%\] {
     width: 50%;
@@ -999,24 +1002,9 @@
       height: calc(var(--spacing) * 40);
     }
   }
-  .md\:h-72 {
-    @media (width >= 48rem) {
-      height: calc(var(--spacing) * 72);
-    }
-  }
-  .md\:h-\[85\%\] {
-    @media (width >= 48rem) {
-      height: 85%;
-    }
-  }
   .md\:w-12 {
     @media (width >= 48rem) {
       width: calc(var(--spacing) * 12);
-    }
-  }
-  .md\:w-\[30\%\] {
-    @media (width >= 48rem) {
-      width: 30%;
     }
   }
   .md\:w-\[75\%\] {
@@ -1099,19 +1087,9 @@
       height: calc(var(--spacing) * 24);
     }
   }
-  .xl\:h-64 {
-    @media (width >= 80rem) {
-      height: calc(var(--spacing) * 64);
-    }
-  }
   .xl\:w-8 {
     @media (width >= 80rem) {
       width: calc(var(--spacing) * 8);
-    }
-  }
-  .xl\:w-\[25\%\] {
-    @media (width >= 80rem) {
-      width: 25%;
     }
   }
   .xl\:w-\[30\%\] {
@@ -1127,6 +1105,11 @@
   .xl\:w-\[75\%\] {
     @media (width >= 80rem) {
       width: 75%;
+    }
+  }
+  .xl\:w-\[calc\(50\%-0\.5rem\)\] {
+    @media (width >= 80rem) {
+      width: calc(50% - 0.5rem);
     }
   }
   .xl\:max-w-\[250px\] {

@@ -50,7 +50,7 @@ class Event(models.Model):
     cover_image = models.ImageField(
         'Обложка',
         upload_to='events/covers/',
-        help_text='~1000px по ширине, квадрат или 4/5, JPG/PNG'
+        help_text='~1000px width, квадрат или 5/4, JPG/PNG'
     )
     home_banner = models.ImageField(
         'Баннер на главной',
