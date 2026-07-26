@@ -55,7 +55,7 @@ class Event(models.Model):
     home_banner = models.ImageField(
         'Баннер на главной',
         upload_to='events/banners/',
-        help_text='~1900×300px, оставь место по краям, JPG/PNG',
+        help_text='~1000px width, 3/1, 30% картинки слева закроет плашка с текстом, JPG/PNG',
         blank=True
     )
     bottom_image = models.ImageField(
@@ -70,6 +70,7 @@ class Event(models.Model):
         default=False,
         help_text='Показывать кнопку записи в лист ожидания на странице события'
     )
+    regulations_url = models.URLField('Ссылка на положение', blank=True)
     registration_url = models.URLField('Ссылка на регистрацию', blank=True)
     results_url = models.URLField('Ссылка на результаты', blank=True)
     partners = models.ManyToManyField(

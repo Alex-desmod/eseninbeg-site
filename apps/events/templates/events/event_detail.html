@@ -79,6 +79,12 @@
         </div>
         {% endif %}
 
+        {% if event.regulations_url %}
+        <a href="{{ event.regulations_url }}" class="mt-6 inline-block text-emerald-700 hover:underline">
+            Положение
+        </a>
+        {% endif %}
+
         {% if event.waitlist_enabled %}
         <div class="mt-6 flex justify-center">
             <button type="button"

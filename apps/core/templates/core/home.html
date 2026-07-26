@@ -13,10 +13,10 @@
         </div>
 
         <div class="relative ml-2 h-[95%] w-[30%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md">
-            <h2 class="mb-4 font-heading font-bold tracking-tight text-white">
+            <h2 class="mb-4 font-heading font-bold text-xl md:text-6xl tracking-tight text-white">
                 {{ event.title }}
             </h2>
-            <p class="mt-2 font-heading font-light uppercase text-white/80">
+            <p class="mt-2 font-heading font-light text-sm md:text-xl uppercase text-white/80">
                 {% if event.date %}
                 {{ event.date|date:"j E Y" }}
                 {% elif event.is_recurring %}
