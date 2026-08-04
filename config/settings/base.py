@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'apps.events',
     'apps.partners',
     'apps.core',
-    'apps.gallery'
+    'apps.gallery',
+    'apps.shop'
 ]
 
 MIDDLEWARE = [
