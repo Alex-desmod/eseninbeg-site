@@ -14,6 +14,7 @@ class ProductPhotoInline(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'product_type', 'is_active', 'total_stock']
     list_filter = ['product_type', 'is_active']
+    prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductVariantInline, ProductPhotoInline]
 
 

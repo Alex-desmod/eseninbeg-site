@@ -1,4 +1,4 @@
-from django.views.generic import ListView
+from django.views.generic import ListView,DetailView
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from .models import Product, ProductVariant, Order, OrderItem
@@ -15,8 +15,21 @@ class ProductListView(ListView):
         return Product.objects.filter(is_active=True).prefetch_related('photos', 'variants')
 
 
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'shop/product_detail.html'
+    context_object_name = 'product'
+
+    def get_queryset(self):
+        return Product.objects.filter(is_active=True).prefetch_related('photos', 'variants')
+
+
 @require_POST
-def cart_add(request, variant_id):
+def cart_add(request):
+    variant_id = request.POST.get('variant_id')
+    if not variant_id:
+        return render(request, 'shop/partials/cart_error.html', {'error': 'Выберите размер'})
+
     variant = get_object_or_404(ProductVariant, pk=variant_id)
     quantity = int(request.POST.get('quantity', 1))
     cart = Cart(request)

@@ -1,3 +1,4 @@
+from django.utils.text import slugify
 from django.db import models
 
 # Create your models here.
@@ -11,6 +12,7 @@ class Product(models.Model):
         ('other', 'другое'),
     ]
 
+    slug = models.SlugField('URL', unique=True, blank=True)
     product_type = models.CharField('Тип', max_length=20, choices=TYPE_CHOICES)
     name = models.CharField('Название', max_length=200)
     description = models.TextField('Описание', blank=True)
@@ -28,6 +30,11 @@ class Product(models.Model):
     @property
     def total_stock(self):
         return sum(v.stock for v in self.variants.all())
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class ProductVariant(models.Model):
