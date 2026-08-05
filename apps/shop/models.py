@@ -62,3 +62,39 @@ class ProductPhoto(models.Model):
 
     def __str__(self):
         return f'Фото {self.product.name} #{self.pk}'
+
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'новая'),
+        ('confirmed', 'подтверждена'),
+        ('cancelled', 'отменена'),
+    ]
+
+    full_name = models.CharField('ФИО', max_length=200)
+    phone = models.CharField('Телефон', max_length=20)
+    email = models.EmailField('Email', blank=True)
+    comment = models.TextField('Комментарий к заказу', blank=True)
+    status = models.CharField('Статус', max_length=10, choices=STATUS_CHOICES, default='new')
+    created_at = models.DateTimeField('Дата заявки', auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Заявка'
+        verbose_name_plural = 'Заявки'
+
+    def __str__(self):
+        return f'Заявка №{self.pk} — {self.full_name}'
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    variant = models.ForeignKey(ProductVariant, related_name='order_items', on_delete=models.PROTECT)
+    quantity = models.PositiveIntegerField('Количество', default=1)
+
+    class Meta:
+        verbose_name = 'Позиция заявки'
+        verbose_name_plural = 'Позиции заявки'
+
+    def __str__(self):
+        return f'{self.variant} × {self.quantity}'
