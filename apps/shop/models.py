@@ -16,6 +16,7 @@ class Product(models.Model):
     product_type = models.CharField('Тип', max_length=20, choices=TYPE_CHOICES)
     name = models.CharField('Название', max_length=200)
     description = models.TextField('Описание', blank=True)
+    price = models.DecimalField('Цена', max_digits=10, decimal_places=2, default=0)
     is_active = models.BooleanField('Доступен для заказа', default=True)
     created_at = models.DateTimeField('Дата добавления', auto_now_add=True)
 
@@ -92,6 +93,10 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Заявка №{self.pk} — {self.full_name}'
+
+    @property
+    def total_price(self):
+        return sum(item.variant.product.price * item.quantity for item in self.items.all())
 
 
 class OrderItem(models.Model):
