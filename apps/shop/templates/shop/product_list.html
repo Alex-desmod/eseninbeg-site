@@ -1,0 +1,30 @@
+{% extends 'shop/base_shop.html' %}
+{% load static %}
+
+{% block title %}Мерч{% endblock %}
+
+{% block shop_content %}
+
+<div class="px-6 pt-6">
+    <a href="{% url 'core:home' %}" aria-label="На главную" class="group inline-block w-6 h-6 md:w-8 md:h-8">
+        <span
+            style="mask-image:url('{% static "img/icons/home.svg" %}'); -webkit-mask-image:url('{% static "img/icons/home.svg" %}');"
+            class="block w-full h-full bg-neutral-500 group-hover:bg-neutral-900 transition-colors
+            [mask-repeat:no-repeat] [mask-size:contain] [mask-position:center]
+            [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:contain] [-webkit-mask-position:center]">
+        </span>
+    </a>
+</div>
+
+<h1 class="text-2xl md:text-3xl font-semibold tracking-tight text-center mt-4 mb-8">Мерч</h1>
+
+<div class="flex overflow-x-auto snap-x gap-4 px-6 pb-4
+            xl:grid xl:grid-cols-3 xl:gap-6 xl:px-0 xl:max-w-6xl xl:mx-auto xl:overflow-visible">
+    {% for product in products %}
+        {% include 'shop/partials/product_card.html' %}
+    {% endfor %}
+</div>
+
+{% include 'shop/partials/cart_button.html' %}
+
+{% endblock %}

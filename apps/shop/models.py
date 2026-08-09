@@ -42,6 +42,7 @@ class ProductVariant(models.Model):
     SIZE_CHOICES = [
         ('XS', 'XS'), ('S', 'S'), ('M', 'M'),
         ('L', 'L'), ('XL', 'XL'), ('XXL', 'XXL'),
+        ('35-38', '35-38'), ('39-42', '39-42'), ('43-46', '43-46'),
         ('one_size', 'один размер'),
     ]
 

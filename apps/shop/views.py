@@ -14,6 +14,11 @@ class ProductListView(ListView):
     def get_queryset(self):
         return Product.objects.filter(is_active=True).prefetch_related('photos', 'variants')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)
+        return context
+
 
 class ProductDetailView(DetailView):
     model = Product
@@ -22,6 +27,11 @@ class ProductDetailView(DetailView):
 
     def get_queryset(self):
         return Product.objects.filter(is_active=True).prefetch_related('photos', 'variants')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cart'] = Cart(self.request)
+        return context
 
 
 @require_POST
@@ -56,6 +66,8 @@ def checkout(request):
     if len(cart) == 0:
         return render(request, 'shop/partials/cart_empty.html')
 
+    cart_total = sum(item['variant'].product.price * item['quantity'] for item in cart)
+
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
@@ -68,7 +80,8 @@ def checkout(request):
                 )
             cart.clear()
             return render(request, 'shop/partials/order_success.html')
-        return render(request, 'shop/partials/checkout_form.html', {'form': form, 'cart': cart})
+        return render(request, 'shop/partials/checkout_form.html',
+                      {'form': form, 'cart': cart, 'cart_total': cart_total})
 
     form = OrderForm()
-    return render(request, 'shop/partials/checkout_form.html', {'form': form, 'cart': cart})
+    return render(request, 'shop/partials/checkout_form.html', {'form': form, 'cart': cart, 'cart_total': cart_total})

@@ -10,15 +10,17 @@
 </head>
 <body class="min-h-screen flex flex-col bg-brand-light text-neutral-900">
 
+    {# csrf-token cookie for the htmx requests coming not from <form> (for example the "Order" button in the shop) #}
+    <div style="display:none">{% csrf_token %}</div>
+
     <header class="bg-brand-dark h-32 md:h-40 xl:h-24 flex items-center justify-between px-6 border-b border-neutral-200">
-        <div class="flex items-center gap-2 w-[25%]">
-            {# сюда позже — картинка-логотип #}
-            <span class="font-semibold tracking-tight text-lg">Support your local</span>
-            <p class="text-sm text-neutral-500">(лого банды или какая-нибудь фраза)</p>
+        <div class="flex items-center gap-2 w-[25%] md:w-[20%] xl:w-[12%]">
+            <span class="font-motto text-yellow-500 text-lg md:text-4xl uppercase">Мне осталась одна забава</span>
         </div>
-        {# сюда позже — ссылка на магазин мерча #}
         <nav>
-            <!-- <a href="#" class="text-sm text-neutral-600 hover:text-neutral-900">Магазин</a> -->
+            {% if shop_has_products %}
+            <a href="{% url 'shop:catalog' %}" class="text-sm uppercase text-neutral-300 hover:text-neutral-100">Мерч</a>
+            {% endif %}
         </nav>
     </header>
 

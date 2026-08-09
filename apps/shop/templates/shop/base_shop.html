@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% block shop_content %}{% endblock %}
+
+<dialog id="checkout-dialog" class="rounded-lg p-0 backdrop:bg-black/50 w-[90%] xl:max-w-xl mx-auto mt-12">
+    <div id="checkout-modal-content" class="p-6">
+        <p class="text-sm text-neutral-500">Загрузка…</p>
+    </div>
+</dialog>
+
+<script src="{% static 'js/waitlist-modal.js' %}" defer></script>
+<script src="{% static 'js/htmx-csrf.js' %}" defer></script>
+
+{% endblock %}
