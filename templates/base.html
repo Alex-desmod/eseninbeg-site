@@ -14,14 +14,14 @@
     <div style="display:none">{% csrf_token %}</div>
 
     <header class="bg-brand-dark h-32 md:h-40 xl:h-24 flex items-center justify-between px-6 border-b border-neutral-200">
-        <div class="flex items-center gap-2 w-[25%] md:w-[20%] xl:w-[15%]">
+        <div class="flex items-center gap-2 w-[25%] md:w-[20%]">
             <a href="{% url 'core:home' %}" aria-label="На главную">
-                <span class="font-motto text-yellow-500 text-lg md:text-4xl uppercase">Мне осталась одна забава</span>
+                <span class="font-motto text-yellow-500 text-lg md:text-4xl uppercase">Мне осталась<br>одна забава</span>
             </a>
         </div>
         <nav>
             {% if shop_has_products %}
-            <a href="{% url 'shop:catalog' %}" class="text-sm uppercase text-neutral-300 hover:text-neutral-100">Мерч</a>
+            <a href="{% url 'shop:catalog' %}" class="text-bold text-sm md:text-xl uppercase text-neutral-300 hover:text-neutral-100">Мерч</a>
             {% endif %}
         </nav>
     </header>

@@ -1,0 +1,26 @@
+{% with photos=product.photos.all %}
+<a href="{% url 'shop:detail' slug=product.slug %}"
+   class="group block flex-shrink-0 w-[260px] xl:w-auto snap-start bg-white border border-neutral-200 rounded-lg overflow-hidden">
+
+    <div class="relative aspect-[3/4] overflow-hidden bg-neutral-100">
+        {% if photos %}
+            <img src="{{ photos.0.image.url }}" alt="{{ product.name }}"
+                 class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300
+                        {% if photos|length > 1 %}group-hover:opacity-0{% endif %}">
+            {% if photos|length > 1 %}
+            <img src="{{ photos.1.image.url }}" alt="{{ product.name }}"
+                 class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="p-4">
+        <h3 class="font-semibold">{{ product.name }}</h3>
+        {% if product.description %}
+        <p class="mt-1 text-sm text-neutral-600 line-clamp-2">{{ product.description }}</p>
+        {% endif %}
+        <p class="mt-2 font-semibold">{{ product.price }} ₽</p>
+    </div>
+
+</a>
+{% endwith %}
