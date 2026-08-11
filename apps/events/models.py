@@ -1,6 +1,6 @@
+from datetime import datetime
 from django.db import models
 from django.utils.text import slugify
-
 
 # Create your models here.
 
@@ -91,6 +91,18 @@ class Event(models.Model):
             if self.recurrence_weekday is not None:
                 return self.WEEKDAY_PHRASES[self.recurrence_weekday]
         return ''
+
+    @property
+    def next_start_datetime(self):
+        """
+        Date and time of the first distance for countdown display on the page
+        """
+        if not self.date:
+            return None
+        start_times = self.distances.exclude(start_time__isnull=True).values_list('start_time', flat=True)
+        if not start_times:
+            return None
+        return datetime.combine(self.date, min(start_times))
 
     def save(self, *args, **kwargs):
         if not self.slug:

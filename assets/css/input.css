@@ -56,11 +56,20 @@
     font-display:swap;
 }
 
+@font-face {
+    font-family: "Digiface";
+    src: url("../fonts/Digiface.woff2");
+    weight: 400;
+    font-style: normal;
+    font-display:swap;
+}
+
 @theme {
     --font-sans: "Inter", sans-serif;
     --font-race: "Rodchenko Inline", sans-serif;
     --font-heading: "Rodchenko", sans-serif;
     --font-motto: "Most Wasted", sans-serif;
+    --font-countdown: "Digiface", sans-serif;
     --color-brand-light: #dacec4;
     --color-brand-medium: #a99577;
     --color-brand-dark: #735c4b;

@@ -60,18 +60,45 @@
         {% endif %}
     </div>
 
+    {# ---------- Countdown ---------- #}
+    {% if event.status == 'upcoming' and event.next_start_datetime %}
+    <div class="w-[90%] xl:w-[50%] mx-auto mt-2">
+        <div id="event-countdown"
+             data-target="{{ event.next_start_datetime|date:'Y-m-d\TH:i:s' }}"
+             class="flex items-center justify-center bg-slate-800 gap-4 md:gap-8 rounded-lg px-4 py-4 md:px-6 md:py-5">
+            <div class="text-center">
+                <div class="font-countdown text-4xl md:text-6xl text-yellow-500" data-countdown="days">--</div>
+                <div class="text-xs md:text-sm uppercase tracking-widest text-neutral-300 mt-1">дн</div>
+            </div>
+            <div class="text-center">
+                <div class="font-countdown text-4xl md:text-6xl text-yellow-500" data-countdown="hours">--</div>
+                <div class="text-xs md:text-sm uppercase tracking-widest text-neutral-300 mt-1">ч</div>
+            </div>
+            <div class="text-center">
+                <div class="font-countdown text-4xl md:text-6xl text-yellow-500" data-countdown="minutes">--</div>
+                <div class="text-xs md:text-sm uppercase tracking-widest text-neutral-300 mt-1">мин</div>
+            </div>
+            <div class="text-center">
+                <div class="font-countdown text-4xl md:text-6xl text-yellow-500" data-countdown="seconds">--</div>
+                <div class="text-xs md:text-sm uppercase tracking-widest text-neutral-300 mt-1">сек</div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/event-countdown.js' %}" defer></script>
+    {% endif %}
+
     {# ---------- Description ---------- #}
     <div class="w-[90%] xl:w-[75%] mx-auto mt-6 bg-white rounded-lg px-6 py-6 md:px-10 sm:py-8">
-        <h1 class="text-xl md:text-2xl font-normal uppercase tracking-tight">{{ event.title }}</h1>
-        <p class="mt-2 text-sm uppercase tracking-widest text-neutral-500">
-            {% if event.date %}
-            {{ event.date|date:"j E Y" }}
-            {% elif event.is_recurring %}
-            {{ event.schedule_display }}
-            {% else %}
-            Скоро
-            {% endif %}
-        </p>
+<!--        <h1 class="text-xl md:text-2xl font-normal uppercase tracking-tight">{{ event.title }}</h1>-->
+<!--        <p class="mt-2 text-sm uppercase tracking-widest text-neutral-500">-->
+<!--            {% if event.date %}-->
+<!--            {{ event.date|date:"j E Y" }}-->
+<!--            {% elif event.is_recurring %}-->
+<!--            {{ event.schedule_display }}-->
+<!--            {% else %}-->
+<!--            Скоро-->
+<!--            {% endif %}-->
+<!--        </p>-->
 
         {% if event.description %}
         <div class="mt-6 prose prose-neutral max-w-none">
