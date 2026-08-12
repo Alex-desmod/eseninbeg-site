@@ -1,25 +1,86 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const mainImages = document.querySelectorAll('.product-main-image');
-    const thumbnails = document.querySelectorAll('.product-thumbnail');
+    const mainImages = Array.from(
+        document.querySelectorAll('.product-main-image')
+    );
 
-    thumbnails.forEach(thumbnail => {
-        thumbnail.addEventListener('click', function () {
-            const photoId = this.dataset.photoId;
+    const thumbnails = Array.from(
+        document.querySelectorAll('.product-thumbnail')
+    );
 
-            // Shows the selected photo
-            mainImages.forEach(image => {
-                image.classList.toggle(
-                    'hidden',
-                    image.dataset.photoId !== photoId
-                );
-            });
+    const prevButton = document.getElementById('prev-photo');
+    const nextButton = document.getElementById('next-photo');
 
-            // Switch the miniature frame
-            thumbnails.forEach(item => {
-                item.classList.remove('ring-2', 'ring-neutral-900');
-            });
+    if (!mainImages.length) {
+        return;
+    }
 
-            this.classList.add('ring-2', 'ring-neutral-900');
+    let currentIndex = 0;
+
+
+    function showPhoto(index) {
+        // Index cycling
+        if (index < 0) {
+            index = mainImages.length - 1;
+        }
+
+        if (index >= mainImages.length) {
+            index = 0;
+        }
+
+        currentIndex = index;
+
+        // Displaying the photo
+        mainImages.forEach((image, i) => {
+            image.classList.toggle('hidden', i !== currentIndex);
         });
+
+        // Lighting the corresponding miniature
+        thumbnails.forEach((thumbnail, i) => {
+            thumbnail.classList.toggle(
+                'ring-2',
+                i === currentIndex
+            );
+
+            thumbnail.classList.toggle(
+                'ring-neutral-900',
+                i === currentIndex
+            );
+        });
+    }
+
+
+    // Click on the miniature
+    thumbnails.forEach((thumbnail, index) => {
+        thumbnail.addEventListener('click', function () {
+            showPhoto(index);
+        });
+    });
+
+
+    // Previous photo
+    if (prevButton) {
+        prevButton.addEventListener('click', function () {
+            showPhoto(currentIndex - 1);
+        });
+    }
+
+
+    // Next photo
+    if (nextButton) {
+        nextButton.addEventListener('click', function () {
+            showPhoto(currentIndex + 1);
+        });
+    }
+
+
+    // Switching by keyboard arrows
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowLeft') {
+            showPhoto(currentIndex - 1);
+        }
+
+        if (event.key === 'ArrowRight') {
+            showPhoto(currentIndex + 1);
+        }
     });
 });

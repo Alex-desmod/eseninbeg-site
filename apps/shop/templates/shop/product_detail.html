@@ -37,16 +37,41 @@
             {% if photos %}
 
                 <!-- Main photo -->
-                <div id="main-product-photo"
-                     class="aspect-square rounded-lg overflow-hidden bg-neutral-100">
+                <div id="main-product-photo" class="relative aspect-square rounded-lg overflow-hidden bg-neutral-100">
                     {% for photo in photos %}
                     <img
-                        src="{{ photo.image.url }}"
-                        alt="{{ product.name }}"
-                        class="product-main-image w-full h-full object-cover
-                               {% if not forloop.first %}hidden{% endif %}"
-                        data-photo-id="{{ photo.id }}">
+                            src="{{ photo.image.url }}"
+                            alt="{{ product.name }}"
+                            class="product-main-image w-full h-full object-cover
+                            {% if not forloop.first %}hidden{% endif %}"
+                            data-photo-id="{{ photo.id }}">
                     {% endfor %}
+                    {% if photos|length > 1 %}
+                    <!-- Previous photo -->
+                    <button
+                        type="button"
+                        id="prev-photo"
+                        aria-label="Предыдущее фото"
+                        class="absolute left-3 top-1/2 -translate-y-1/2
+                            w-9 h-9 md:w-10 md:h-10 flex
+                            items-center justify-center rounded-full
+                            bg-white/80 text-neutral-700 hover:bg-white hover:text-neutral-900
+                            shadow-sm transition-colors">
+                        <span class="text-2xl leading-none">‹</span>
+                    </button>
+                    <!-- Next photo -->
+                    <button
+                        type="button"
+                        id="next-photo"
+                        aria-label="Следующее фото"
+                        class="absolute right-3 top-1/2 -translate-y-1/2
+                            w-9 h-9 md:w-10 md:h-10 flex
+                            items-center justify-center rounded-full
+                            bg-white/80 text-neutral-700 hover:bg-white hover:text-neutral-900
+                            shadow-sm transition-colors">
+                        <span class="text-2xl leading-none">›</span>
+                    </button>
+                    {% endif %}
                 </div>
 
                 <!-- Miniatures -->
