@@ -61,7 +61,11 @@ class ProductVariant(models.Model):
 
 class ProductPhoto(models.Model):
     product = models.ForeignKey(Product, related_name='photos', on_delete=models.CASCADE)
-    image = models.ImageField('Фото', upload_to='shop/products/')
+    image = models.ImageField(
+        'Фото',
+        upload_to='shop/products/',
+        help_text='>1000px width, 3/4'
+    )
     order = models.PositiveSmallIntegerField('Порядок', default=0)
 
     class Meta:
