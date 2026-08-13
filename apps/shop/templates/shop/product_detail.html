@@ -42,9 +42,11 @@
                     <img
                             src="{{ photo.image.url }}"
                             alt="{{ product.name }}"
-                            class="product-main-image w-full h-full object-cover
+                            class="gallery-item product-main-image w-full h-full object-cover cursor-zoom-in
                             {% if not forloop.first %}hidden{% endif %}"
-                            data-photo-id="{{ photo.id }}">
+                            data-photo-id="{{ photo.id }}"
+                            data-src="{{ photo.image.url }}"
+                            data-caption="{{ product.name }}">
                     {% endfor %}
                     {% if photos|length > 1 %}
                     <!-- Previous photo -->
@@ -178,7 +180,25 @@
 
 {% include 'shop/partials/cart_button.html' %}
 
+{# ---------- Lightbox ---------- #}
+<div id="lightbox" class="fixed inset-0 z-[60] bg-black/90 items-center justify-center px-4" style="display:none;">
+    <button type="button" id="lightbox-close" aria-label="Закрыть"
+            class="absolute top-4 right-4 text-white/80 hover:text-white text-3xl leading-none">&times;</button>
+
+    <button type="button" id="lightbox-prev" aria-label="Предыдущее"
+            class="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl px-2 select-none">&#8249;</button>
+
+    <div class="max-w-[90vw] max-h-[85vh] flex flex-col items-center">
+        <div id="lightbox-media" class="max-w-[90vw] max-h-[75vh] flex items-center justify-center"></div>
+        <p id="lightbox-caption" class="mt-3 text-white/80 text-sm text-center"></p>
+    </div>
+
+    <button type="button" id="lightbox-next" aria-label="Следующее"
+            class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl px-2 select-none">&#8250;</button>
+</div>
+
 <script src="{% static 'js/product-size-select.js' %}" defer></script>
 <script src="{% static 'js/product-photo-select.js' %}" defer></script>
+<script src="{% static 'js/gallery-lightbox.js' %}" defer></script>
 
 {% endblock %}

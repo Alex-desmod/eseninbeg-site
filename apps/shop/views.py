@@ -1,4 +1,4 @@
-from django.views.generic import ListView,DetailView
+from django.views.generic import ListView, DetailView
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 from .models import Product, ProductVariant, Order, OrderItem
@@ -47,17 +47,41 @@ def cart_add(request):
     return render(request, 'shop/partials/cart_button.html', {'cart': cart})
 
 
+def _render_checkout_modal(request, cart):
+    """Shared render of the order modal window for update/remove.
+    The form is connected to the current request.POST —
+    to save the name/phone/email when quantity of the items is changed.
+    """
+    if len(cart) == 0:
+        return render(request, 'shop/partials/cart_empty.html')
+
+    cart_total = sum(item['variant'].product.price * item['quantity'] for item in cart)
+    form = OrderForm(request.POST)
+    return render(request, 'shop/partials/checkout_form.html', {'form': form, 'cart': cart, 'cart_total': cart_total})
+
+
+@require_POST
+def cart_update(request, variant_id):
+    variant = get_object_or_404(ProductVariant, pk=variant_id)
+    cart = Cart(request)
+
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        quantity = 1
+
+    quantity = max(0, min(quantity, variant.stock))
+    cart.update(variant, quantity)
+
+    return _render_checkout_modal(request, cart)
+
+
 @require_POST
 def cart_remove(request, variant_id):
     variant = get_object_or_404(ProductVariant, pk=variant_id)
     cart = Cart(request)
     cart.remove(variant)
-    return render(request, 'shop/partials/cart_detail.html', {'cart': cart})
-
-
-def cart_detail(request):
-    cart = Cart(request)
-    return render(request, 'shop/partials/cart_detail.html', {'cart': cart})
+    return _render_checkout_modal(request, cart)
 
 
 def checkout(request):
@@ -80,8 +104,7 @@ def checkout(request):
                 )
             cart.clear()
             return render(request, 'shop/partials/order_success.html')
-        return render(request, 'shop/partials/checkout_form.html',
-                      {'form': form, 'cart': cart, 'cart_total': cart_total})
+        return render(request, 'shop/partials/checkout_form.html', {'form': form, 'cart': cart, 'cart_total': cart_total})
 
     form = OrderForm()
     return render(request, 'shop/partials/checkout_form.html', {'form': form, 'cart': cart, 'cart_total': cart_total})
