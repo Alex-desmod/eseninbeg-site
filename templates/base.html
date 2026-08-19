@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Support your local{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/icons/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/icons/apple-touch-icon.png' %}">
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
 </head>
@@ -14,17 +16,49 @@
     <div style="display:none">{% csrf_token %}</div>
 
     <header class="bg-brand-dark h-32 md:h-40 xl:h-24 flex items-center justify-between px-6 border-b border-neutral-200">
-        <div class="flex items-center gap-2 w-[25%] md:w-[20%]">
+        <div class="flex items-center gap-3 md:gap-4">
+            <button type="button" id="burger-btn" aria-label="Меню" aria-expanded="false" aria-controls="mobile-menu"
+                    class="xl:hidden flex flex-col justify-center gap-2 w-10 h-8 md:gap-3 md:w-20 md:h-12 flex-shrink-0">
+                <span class="block h-1 w-8 md:h-1.5 md:w-12 bg-neutral-200"></span>
+                <span class="block h-1 w-8 md:h-1.5 md:w-12 bg-neutral-200"></span>
+                <span class="block h-1 w-8 md:h-1.5 md:w-12 bg-neutral-200"></span>
+            </button>
+
             <a href="{% url 'core:home' %}" aria-label="На главную">
-                <span class="font-motto text-yellow-500 text-lg md:text-4xl uppercase">Мне осталась<br>одна забава</span>
+                <span class="font-motto text-yellow-500 text-xl md:text-4xl uppercase">Мне осталась<br>одна забава</span>
             </a>
         </div>
-        <nav>
+
+        <nav class="hidden xl:block">
             {% if shop_has_products %}
-            <a href="{% url 'shop:catalog' %}" class="text-bold text-sm md:text-xl uppercase text-neutral-300 hover:text-neutral-100">Мерч</a>
+            <a href="{% url 'shop:catalog' %}" class="text-bold text-xl uppercase text-neutral-300 hover:text-neutral-100">Мерч</a>
             {% endif %}
         </nav>
     </header>
+
+    {# ---------- Burger menu ---------- #}
+    <div id="mobile-menu" class="hidden xl:hidden fixed inset-0 z-50 bg-brand-dark overflow-y-auto">
+        <div class="flex items-center justify-between px-6 h-32 border-b border-neutral-700">
+            <span class="font-motto text-yellow-500 text-xl md:text-4xl uppercase">Меню</span>
+            <button type="button" id="burger-close" aria-label="Закрыть меню" class="text-neutral-200 text-3xl md:text-5xl leading-none">
+                &times;
+            </button>
+        </div>
+        <nav class="flex flex-col px-6 py-4">
+            {% for event in nav_events %}
+            <a href="{% url 'events:detail' slug=event.slug %}"
+               class="py-3 md:py-5 border-b border-neutral-700 text-neutral-200 hover:text-white uppercase text-base md:text-3xl font-bold tracking-wide">
+                {{ event.title }}
+            </a>
+            {% endfor %}
+            {% if shop_has_products %}
+            <a href="{% url 'shop:catalog' %}"
+               class="py-3 md:py-5 mt-2 text-yellow-500 uppercase text-base md:text-3xl font-bold tracking-wide">
+                Мерч
+            </a>
+            {% endif %}
+        </nav>
+    </div>
 
     <main class="flex-1">
         {% block content %}{% endblock %}
@@ -63,6 +97,8 @@
             <img src="{% static 'img/icons/goose_w.svg' %}" alt="" class="w-20 h-20 opacity-50">
         </div>
     </footer>
+
+    <script src="{% static 'js/mobile-menu.js' %}" defer></script>
 
 </body>
 </html>
