@@ -6,17 +6,17 @@
 <div class="flex flex-wrap justify-center gap-4 py-6 px-4">
     {% for event in events %}
     <a href="{% url 'events:detail' slug=event.slug %}"
-       class="group relative w-full xl:w-[calc(50%-0.5rem)] aspect-[3/1] flex items-center overflow-hidden rounded-lg">
+        class="group relative w-full min-h-[140px] sm:aspect-[3/1] sm:min-h-0 xl:w-[calc(50%-0.5rem)] flex items-center overflow-hidden rounded-lg">
 
         <div class="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105"
              style="background-image: url('{% if event.home_banner %}{{ event.home_banner.url }}{% else %}{{ event.cover_image.url }}{% endif %}');">
         </div>
 
-        <div class="relative ml-2 h-[95%] w-[30%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md">
-            <h2 class="mb-4 font-heading font-bold text-xl md:text-3xl lg:text-4xl 2xl:text-5xl tracking-tight text-white break-words leading-tight">
+        <div class="relative ml-2 h-[90%] w-[45%] sm:w-[30%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md overflow-hidden">
+            <h2 class="mb-1 sm:mb-4 font-heading font-bold text-lg sm:text-xl md:text-2xl xl:text-4xl leading-tight tracking-tight text-white line-clamp-2">
                 {{ event.title }}
             </h2>
-            <p class="mt-2 font-heading font-light text-sm md:text-lg xl:text-xl uppercase text-white/80">
+            <p class="mt-1 sm:mt-2 font-heading font-light text-xs sm:text-sm md:text-lg xl:text-xl leading-tight uppercase text-white/80">
                 {% if event.date %}
                 {{ event.date|date:"j E Y" }}
                 {% elif event.is_recurring %}
