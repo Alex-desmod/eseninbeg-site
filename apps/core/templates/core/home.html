@@ -6,14 +6,15 @@
 <div class="flex flex-wrap justify-center gap-4 py-6 px-4">
     {% for event in events %}
     <a href="{% url 'events:detail' slug=event.slug %}"
-        class="group relative w-full min-h-[140px] sm:aspect-[3/1] sm:min-h-0 xl:w-[calc(50%-0.5rem)] flex items-center overflow-hidden rounded-lg">
+       class="group relative w-full aspect-[3/1] lg:w-[calc(50%-0.5rem)] flex items-center overflow-hidden rounded-lg">
 
         <div class="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105"
              style="background-image: url('{% if event.home_banner %}{{ event.home_banner.url }}{% else %}{{ event.cover_image.url }}{% endif %}');">
         </div>
 
-        <div class="relative ml-2 h-[90%] w-[45%] sm:w-[30%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md overflow-hidden">
-            <h2 class="mb-1 sm:mb-4 font-heading font-bold text-lg sm:text-xl md:text-2xl xl:text-4xl leading-tight tracking-tight text-white line-clamp-2">
+        <div class="relative ml-2 h-[90%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md overflow-hidden"
+             style="width: clamp(120px, 35%, 320px);">
+            <h2 class="mb-1 sm:mb-4 font-heading font-bold text-base sm:text-xl md:text-3xl xl:text-4xl leading-tight tracking-tight text-white line-clamp-2">
                 {{ event.title }}
             </h2>
             <p class="mt-1 sm:mt-2 font-heading font-light text-xs sm:text-sm md:text-lg xl:text-xl leading-tight uppercase text-white/80">
