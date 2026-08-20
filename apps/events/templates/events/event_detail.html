@@ -62,7 +62,7 @@
 
     {# ---------- Countdown ---------- #}
     {% if event.status == 'upcoming' and event.next_start_datetime %}
-    <div class="w-[90%] xl:w-[50%] mx-auto mt-2">
+    <div class="w-[90%] lg:w-[40%] mx-auto mt-2">
         <div id="event-countdown"
              data-target="{{ event.next_start_datetime|date:'Y-m-d\TH:i:s' }}"
              class="flex items-center justify-center bg-slate-800 gap-4 md:gap-8 rounded-lg px-4 py-4 md:px-6 md:py-5">
