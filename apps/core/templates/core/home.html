@@ -8,7 +8,7 @@
     <a href="{% url 'events:detail' slug=event.slug %}"
        class="group relative w-full aspect-[3/1] lg:w-[calc(50%-0.5rem)] flex items-center overflow-hidden rounded-lg">
 
-        <div class="absolute inset-0 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105"
+        <div class="absolute inset-0 bg-cover bg-center lg:grayscale lg:group-hover:grayscale-0 transition-all duration-500 ease-out group-hover:scale-105"
              style="background-image: url('{% if event.home_banner %}{{ event.home_banner.url }}{% else %}{{ event.cover_image.url }}{% endif %}');">
         </div>
 
