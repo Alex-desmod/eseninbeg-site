@@ -12,7 +12,7 @@
              style="background-image: url('{% if event.home_banner %}{{ event.home_banner.url }}{% else %}{{ event.cover_image.url }}{% endif %}');">
         </div>
 
-        <div class="relative ml-2 h-[90%] flex flex-col justify-center bg-black/40 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md overflow-hidden"
+        <div class="relative ml-2 h-[90%] flex flex-col justify-center bg-black/20 backdrop-blur-sm px-2 py-2 sm:px-4 sm:py-4 rounded-md overflow-hidden"
              style="width: clamp(120px, 35%, 320px);">
             <h2 class="mb-1 sm:mb-4 font-heading font-bold text-base sm:text-xl md:text-3xl xl:text-4xl leading-tight tracking-tight text-white line-clamp-2">
                 {{ event.title }}
