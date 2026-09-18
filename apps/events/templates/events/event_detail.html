@@ -102,7 +102,7 @@
 
         {% if event.description %}
         <div class="mt-6 prose prose-neutral max-w-none">
-            {{ event.description|linebreaks }}
+            {{ event.description|safe }}
         </div>
         {% endif %}
 
@@ -175,7 +175,7 @@
         </summary>
         <div class="details-content bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
             {% if event.bib_pickup.description %}
-                {{ event.bib_pickup.description|linebreaks }}
+                {{ event.bib_pickup.description|safe }}
             {% else %}
                 <p class="text-neutral-500">Информация появится позже.</p>
             {% endif %}
@@ -217,11 +217,11 @@
         <div class="details-content bg-white rounded-lg mt-2 px-6 py-6 prose prose-neutral max-w-none">
             <p><strong>Адрес:</strong> {{ event.venue.address }}</p>
             {% if event.venue.directions_text %}
-                {{ event.venue.directions_text|linebreaks }}
+                {{ event.venue.directions_text|safe }}
             {% endif %}
             {% if event.venue.parking_info %}
                 <h4>Парковка</h4>
-                {{ event.venue.parking_info|linebreaks }}
+                {{ event.venue.parking_info|safe }}
             {% endif %}
             {% if event.venue.start_map_image %}
                 <img src="{{ event.venue.start_map_image.url }}" alt="Схема стартового городка"

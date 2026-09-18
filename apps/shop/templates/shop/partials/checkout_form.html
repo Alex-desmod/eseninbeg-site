@@ -35,7 +35,7 @@
                 </button>
             </div>
 
-            <span class="w-16 text-right">{{ item.variant.product.price|mul:item.quantity }} ₽</span>
+            <span class="w-16 text-right">{{ item.variant.product.price|mul:item.quantity|floatformat:"0" }} ₽</span>
 
             <button type="button"
                     hx-post="{% url 'shop:cart_remove' variant_id=item.variant.id %}"
@@ -49,7 +49,7 @@
         {% endfor %}
         <div class="flex justify-between text-sm font-semibold pt-2">
             <span>Итого</span>
-            <span>{{ cart_total }} ₽</span>
+            <span>{{ cart_total|floatformat:"0" }} ₽</span>
         </div>
     </div>
 

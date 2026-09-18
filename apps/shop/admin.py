@@ -1,7 +1,18 @@
+from django import forms
 from django.contrib import admin
 from .models import Product, ProductVariant, ProductPhoto, Order, OrderItem
+from ckeditor.widgets import CKEditorWidget
 
 # Register your models here.
+
+class ProductAdminForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), required=False)
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 1
@@ -12,6 +23,7 @@ class ProductPhotoInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = ['name', 'product_type', 'is_active', 'total_stock']
     list_filter = ['product_type', 'is_active']
     prepopulated_fields = {'slug': ('name',)}

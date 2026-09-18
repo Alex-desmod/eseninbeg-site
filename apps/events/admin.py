@@ -1,11 +1,39 @@
 from import_export import resources
 from import_export.admin import ExportMixin
+from django import forms
 from django.contrib import admin
 from .models import Event, Distance, DistanceRecord, ScheduleItem, BibPickupInfo, VenueInfo, WaitlistEntry
 from ..gallery.models import MediaItem
+from ckeditor.widgets import CKEditorWidget
 
 
 # Register your models here.
+
+class EventAdminForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), required=False)
+
+    class Meta:
+        model = Event
+        fields = '__all__'
+
+
+class BibPickupInfoAdminForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), required=False)
+
+    class Meta:
+        model = BibPickupInfo
+        fields = '__all__'
+
+
+class VenueInfoAdminForm(forms.ModelForm):
+    directions_text = forms.CharField(widget=CKEditorWidget(), required=False)
+    parking_info = forms.CharField(widget=CKEditorWidget(), required=False)
+
+    class Meta:
+        model = VenueInfo
+        fields = '__all__'
+
+
 class DistanceInline(admin.TabularInline):
     model = Distance
     extra = 1
@@ -18,12 +46,14 @@ class ScheduleItemInline(admin.TabularInline):
 
 class BibPickupInfoInline(admin.StackedInline):
     model = BibPickupInfo
+    form = BibPickupInfoAdminForm
     extra = 0
     max_num = 1
 
 
 class VenueInfoInline(admin.StackedInline):
     model = VenueInfo
+    form = VenueInfoAdminForm
     extra = 0
     max_num = 1
 
@@ -34,9 +64,9 @@ class MediaItemInline(admin.TabularInline):
     fields = ['media_type', 'image', 'video_embed_url', 'caption', 'order']
 
 
-
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
+    form = EventAdminForm
     list_display = ['home_order', 'title', 'date', 'location', 'status', 'waitlist_enabled']
     list_display_links = ['title']
     list_editable = ['home_order', 'waitlist_enabled']

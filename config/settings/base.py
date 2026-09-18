@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ckeditor',
+    # 'ckeditor_uploader',  # to upload pics right from the editor
     'import_export',
     'axes',
     'apps.events',
@@ -113,6 +115,21 @@ AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList'],
+            ['Link', 'Unlink'],
+            ['Undo', 'Redo'],
+            ['RemoveFormat', 'Source'],  # Source — to see/edit HTML manually
+        ],
+        'height': 250,
+        'width': '100%',
+    },
+}
 
 # Authentication attempts limits
 AXES_FAILURE_LIMIT = 5              # max failure attempts
