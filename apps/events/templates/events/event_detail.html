@@ -320,44 +320,61 @@
     </details>
     {% endif %}
 
-    {# ---------- How it was ---------- #}
-    {% if event.media_items.exists %}
-    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
-        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
-                         px-6 py-2 md:px-10 flex items-center justify-between">
-            <span class="font-race text-brand-dark text-4xl md:text-6xl uppercase">Как это было</span>
-            <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
-        </summary>
-        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6">
-            {% for item in event.media_items.all %}
-                {% if item.media_type == 'video' %}
-                <div class="max-w-2xl mx-auto mb-6">
-                    <div class="aspect-video">
-                        <iframe src="{{ item.video_embed_url }}" class="w-full h-full rounded-md"
-                                allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                    {% if item.caption %}
-                    <p class="mt-2 text-sm text-neutral-600 text-center">{{ item.caption }}</p>
-                    {% endif %}
+    {# ---------- Video ---------- #}
+    {% for item in event.media_items.all %}
+        {% if item.media_type == 'video' %}
+        <div class="w-[90%] xl:w-[75%] mx-auto mt-8">
+            <div class="max-w-2xl mx-auto">
+                <div class="aspect-video">
+                    <iframe src="{{ item.video_embed_url }}" class="w-full h-full rounded-md"
+                            allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
                 </div>
+                {% if item.caption %}
+                <p class="mt-2 text-sm text-neutral-600 text-center">{{ item.caption }}</p>
                 {% endif %}
-            {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
 
-            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+    {# ---------- Photo strip ---------- #}
+    {% if event.media_items.exists %}
+    <div class="relative w-full mt-8">
+        <button type="button" id="gallery-prev" aria-label="Предыдущие фото"
+                class="absolute left-3 top-1/2 -translate-y-1/2 z-10
+                       w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full
+                       bg-white/80 text-neutral-700 hover:bg-white hover:text-neutral-900
+                       shadow-sm transition-colors">
+            <span class="text-2xl leading-none">‹</span>
+        </button>
+
+        <div id="gallery-strip"
+             class="overflow-x-auto scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div class="flex gap-3 px-6 pb-2 w-max">
                 {% for item in event.media_items.all %}
                     {% if item.media_type == 'photo' %}
                     <button type="button"
-                            class="gallery-item group/item relative aspect-square overflow-hidden rounded-md bg-neutral-100"
+                            class="gallery-item group/item relative flex-shrink-0
+                                   h-48 sm:h-56 md:h-64 rounded-md overflow-hidden bg-neutral-100"
                             data-src="{{ item.image.url }}"
                             data-caption="{{ item.caption|default:'' }}">
                         <img src="{{ item.image.url }}" alt="{{ item.caption }}"
-                             class="w-full h-full object-cover group-hover/item:scale-105 transition-transform duration-300">
+                             class="h-full w-auto object-cover rounded-md group-hover/item:scale-105 transition-transform duration-300">
                     </button>
                     {% endif %}
                 {% endfor %}
             </div>
         </div>
-    </details>
+
+        <button type="button" id="gallery-next" aria-label="Следующие фото"
+                class="absolute right-3 top-1/2 -translate-y-1/2 z-10
+                       w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full
+                       bg-white/80 text-neutral-700 hover:bg-white hover:text-neutral-900
+                       shadow-sm transition-colors">
+            <span class="text-2xl leading-none">›</span>
+        </button>
+    </div>
+    <script src="{% static 'js/gallery-strip-nav.js' %}" defer></script>
     {% endif %}
 
     {# ---------- Lightbox ---------- #}
@@ -381,13 +398,6 @@
     <script src="{% static 'js/details-accordion.js' %}" defer></script>
     <script src="{% static 'js/records-shine.js' %}" defer></script>
 
-    {# ---------- Bottom image ---------- #}
-    {% if event.bottom_image %}
-    <div class="w-full flex justify-center mt-6 md:mt-8 overflow-hidden">
-        <img src="{{ event.bottom_image.url }}"
-            class="w-[50%] xl:w-[30%] h-auto md:max-w-[300px] xl:max-w-[250px] object-cover">
-    </div>
-    {% endif %}
 
     {# ---------- Partners ---------- #}
     {% if event.partners.exists %}
