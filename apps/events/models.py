@@ -121,7 +121,7 @@ class Distance(models.Model):
     route_map_image = models.ImageField(
         'Схема трассы',
         upload_to='events/routes/',
-        help_text='~600px по ширине, JPG/PNG',
+        help_text='~500px по ширине, JPG/PNG',
         blank=True
     )
     gpx_file = models.FileField('GPX трек', upload_to='events/gpx', blank=True)
@@ -173,6 +173,12 @@ class ScheduleItem(models.Model):
 class BibPickupInfo(models.Model):
     event = models.OneToOneField(Event, related_name='bib_pickup', on_delete=models.CASCADE)
     description = models.TextField('Инфо о выдаче номеров', blank=True)
+    bib_image = models.ImageField(
+        'Номер участника',
+        upload_to='events/bibs/',
+        help_text='~500px по ширине, JPG/PNG',
+        blank=True
+    )
 
     class Meta:
         verbose_name = 'Выдача номеров'
