@@ -70,8 +70,25 @@ class Event(models.Model):
         default=False,
         help_text='Показывать кнопку записи в лист ожидания на странице события'
     )
+    REGISTRATION_MODE_CHOICES = [
+        ('external', 'внешняя'),
+        ('internal', 'на сайте'),
+        ('none', 'нет'),
+    ]
+
     regulations_url = models.URLField('Ссылка на положение', blank=True)
+    registration_mode = models.CharField(
+        'Способ регистрации',
+        max_length=10,
+        choices=REGISTRATION_MODE_CHOICES,
+        default='external',
+        help_text='external — по ссылке, internal — форма регистрации на сайте, none — без регистрации'
+    )
     registration_url = models.URLField('Ссылка на регистрацию', blank=True)
+    payment_recipient = models.CharField('Получатель платежа', max_length=200, blank=True)
+    payment_recipient_phone = models.CharField('Телефон получателя платежа', max_length=20, blank=True)
+    payment_card_number = models.CharField('Номер карты получателя', max_length=25, blank=True)
+    payment_bank = models.CharField('Название банка', max_length=100, blank=True)
     results_url = models.URLField('Ссылка на результаты', blank=True)
     partners = models.ManyToManyField(
         'partners.Partner',
@@ -118,6 +135,14 @@ class Distance(models.Model):
     name = models.CharField('Название', max_length=100)
     length_km = models.DecimalField(max_digits=5, decimal_places=2)
     start_time = models.TimeField(null=True, blank=True)
+    price = models.DecimalField(
+        'Стоимость участия',
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text='Пусто — участие бесплатное'
+    )
     route_map_image = models.ImageField(
         'Схема трассы',
         upload_to='events/routes/',

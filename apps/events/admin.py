@@ -16,6 +16,20 @@ class EventAdminForm(forms.ModelForm):
         model = Event
         fields = '__all__'
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get('registration_mode') == 'internal':
+            required = [
+                ('payment_recipient', 'получатель платежа'),
+                ('payment_recipient_phone', 'телефон получателя платежа'),
+                ('payment_card_number', 'номер карты получателя'),
+                ('payment_bank', 'название банка'),
+            ]
+            for field, label in required:
+                if not cleaned_data.get(field):
+                    self.add_error(field, f'Для внутренней регистрации укажите {label}')
+        return cleaned_data
+
 
 class BibPickupInfoAdminForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget(), required=False)
@@ -37,6 +51,7 @@ class VenueInfoAdminForm(forms.ModelForm):
 class DistanceInline(admin.TabularInline):
     model = Distance
     extra = 1
+    fields = ['name', 'length_km', 'start_time', 'price', 'route_map_image', 'gpx_file']
 
 
 class ScheduleItemInline(admin.TabularInline):
