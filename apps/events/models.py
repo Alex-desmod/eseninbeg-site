@@ -84,7 +84,8 @@ class Event(models.Model):
         default='external',
         help_text='external — по ссылке, internal — форма регистрации на сайте, none — без регистрации'
     )
-    registration_url = models.URLField('Ссылка на регистрацию', blank=True)
+    registration_url = models.URLField('Ссылка на регистрацию', blank=True,
+                                       help_text='Используется при способе "Внешняя ссылка"')
     payment_recipient = models.CharField('Получатель платежа', max_length=200, blank=True)
     payment_recipient_phone = models.CharField('Телефон получателя платежа', max_length=20, blank=True)
     payment_card_number = models.CharField('Номер карты получателя', max_length=25, blank=True)
