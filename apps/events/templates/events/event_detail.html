@@ -41,13 +41,24 @@
     <div class="relative w-[90%] lg:w-[40%] mx-auto mt-6 md:mt-8 rounded-lg overflow-hidden">
         <img src="{{ event.cover_image.url }}" alt="{{ event.title }}" class="w-full h-auto object-cover">
 
-        {% if event.registration_url %}
+        {% if event.registration_mode == 'external' and event.registration_url %}
         <a href="{{ event.registration_url }}" target="_blank" rel="noopener"
            class="absolute left-4 bottom-4 px-4 py-2 md:px-6 sm:py-3 rounded-md text-sm md:text-2xl xl:text-xl font-bold uppercase
                   bg-white/90 border border-emerald-600 text-emerald-700
                   hover:bg-emerald-600 hover:text-white transition-colors">
             Регистрация
         </a>
+        {% elif event.registration_mode == 'internal' %}
+        <button type="button"
+                onclick="document.getElementById('registration-dialog').showModal()"
+                hx-get="{% url 'registration:form' slug=event.slug %}"
+                hx-target="#registration-modal-content"
+                hx-swap="innerHTML"
+                class="absolute left-4 bottom-4 px-4 py-2 md:px-6 sm:py-3 rounded-md text-sm md:text-2xl xl:text-xl font-bold uppercase
+                       bg-white/90 border border-emerald-600 text-emerald-700
+                       hover:bg-emerald-600 hover:text-white transition-colors">
+            Регистрация
+        </button>
         {% endif %}
 
         {% if event.results_url %}
@@ -59,6 +70,15 @@
         </a>
         {% endif %}
     </div>
+
+    {% if event.registration_mode == 'internal' %}
+    <dialog id="registration-dialog" class="rounded-lg p-0 backdrop:bg-black/50 w-[90%] xl:max-w-xl mx-auto mt-12">
+        <div id="registration-modal-content" class="p-6">
+            <p class="text-sm text-neutral-500">Загрузка…</p>
+        </div>
+    </dialog>
+    <script src="{% static 'js/waitlist-modal.js' %}" defer></script>
+    {% endif %}
 
     {# ---------- Countdown ---------- #}
     {% if event.status == 'upcoming' and event.next_start_datetime %}

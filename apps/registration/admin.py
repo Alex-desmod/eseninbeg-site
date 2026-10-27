@@ -1,7 +1,33 @@
 from import_export import resources
 from import_export.admin import ExportMixin
+from django import forms
 from django.contrib import admin
 from .models import Registration
+
+
+class RegistrationForm(forms.ModelForm):
+    """Validates bib number uniqueness at the form level so the admin shows a field
+    error instead of a 500 from the DB constraint."""
+
+    class Meta:
+        model = Registration
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        bib_number = cleaned_data.get('bib_number')
+        event = cleaned_data.get('event') or self.instance.event
+        if bib_number is not None and event is not None:
+            duplicate = Registration.objects.filter(
+                event=event,
+                bib_number=bib_number,
+            ).exclude(pk=self.instance.pk)
+            if duplicate.exists():
+                self.add_error(
+                    'bib_number',
+                    'Этот номер участника уже используется в этом событии',
+                )
+        return cleaned_data
 
 
 class RegistrationResource(resources.ModelResource):
@@ -12,6 +38,7 @@ class RegistrationResource(resources.ModelResource):
 @admin.register(Registration)
 class RegistrationAdmin(ExportMixin, admin.ModelAdmin):
     resource_class = RegistrationResource
+    form = RegistrationForm
     list_display = [
         'full_name', 'event', 'distance', 'status', 'gender',
         'birth_date', 'email', 'phone', 'amount', 'bib_number', 'created_at'
@@ -21,5 +48,7 @@ class RegistrationAdmin(ExportMixin, admin.ModelAdmin):
     search_fields = ['full_name', 'email', 'phone', 'city', 'club']
     readonly_fields = ['created_at']
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+    def get_changelist_form(self, request, **kwargs):
+        """Changelist editing must use the same validating form."""
+        return RegistrationForm
+

@@ -1,4 +1,7 @@
-from django.db import models
+from django.db import IntegrityError, models, transaction
+from django.db.models import Q
+from decimal import Decimal
+
 from django.core.exceptions import ValidationError
 from ..events.models import Event, Distance
 
@@ -7,7 +10,6 @@ class Registration(models.Model):
     STATUS_CHOICES = [
         ('pending', 'ожидает оплаты'),
         ('paid', 'оплачена'),
-        ('cancelled', 'отменена'),
     ]
 
     GENDER_CHOICES = [
@@ -45,7 +47,8 @@ class Registration(models.Model):
         'Номер участника',
         null=True,
         blank=True,
-        help_text='Назначается администратором после подтверждения оплаты'
+        help_text='Назначается автоматически после подтверждения оплаты. '
+                  'Можно изменить вручную; номера должны быть уникальны в рамках события'
     )
 
     class Meta:
@@ -53,7 +56,12 @@ class Registration(models.Model):
         verbose_name = 'Регистрация'
         verbose_name_plural = 'Регистрации'
         constraints = [
-            models.UniqueConstraint(fields=['distance', 'email'], name='unique_registration_per_distance')
+            models.UniqueConstraint(fields=['distance', 'email'], name='unique_registration_per_distance'),
+            models.UniqueConstraint(
+                fields=['event', 'bib_number'],
+                condition=Q(bib_number__isnull=False),
+                name='unique_bib_number_per_event',
+            ),
         ]
 
     @classmethod
@@ -69,9 +77,64 @@ class Registration(models.Model):
                 raise ValidationError('Достигнут лимит регистраций на эту дистанцию')
 
     def save(self, *args, **kwargs):
-        if self.amount is None and self.distance_id and self.distance.price is not None:
-            self.amount = self.distance.price
-        super().save(*args, **kwargs)
+        if self.amount is None and self.distance_id:
+            self.amount = self.distance.price if self.distance.price is not None else Decimal('0.00')
+
+        payment_confirmed = False
+        if (
+            self.bib_number is None
+            and self.status == 'paid'
+            and self.distance_id
+        ):
+            was_paid = self.__class__.objects.filter(pk=self.pk, status='paid').exists()
+            payment_confirmed = not was_paid
+
+        if payment_confirmed:
+            # The assigned number must actually be persisted
+            update_fields = kwargs.get('update_fields')
+            if update_fields is not None and 'bib_number' not in update_fields:
+                kwargs = dict(kwargs, update_fields=[*update_fields, 'bib_number'])
+
+        for attempt in range(3):
+            try:
+                with transaction.atomic():
+                    if payment_confirmed:
+                        self.assign_bib_number()
+                    super().save(*args, **kwargs)
+                break
+            except IntegrityError as e:
+                if not payment_confirmed:
+                    # A manually set number collided with an existing one;
+                    # surface a proper validation error instead of a 500.
+                    if self._is_bib_number_conflict(e):
+                        raise ValidationError('Этот номер участника уже используется в этом событии')
+                    raise
+                # A concurrent payment confirmation assigned the same number;
+                # pick the next free one and try again.
+                if attempt == 2:
+                    raise
+                self.bib_number = None
+
+    @staticmethod
+    def _is_bib_number_conflict(error):
+        text = str(error)
+        return 'unique_bib_number_per_event' in text or 'bib_number' in text
+
+    def assign_bib_number(self):
+        """Assign the next free bib number for the event, starting from the distance's start number."""
+        if self.bib_number is not None or not self.event_id:
+            return self.bib_number
+        used = set(
+            Registration.objects.filter(
+                event_id=self.event_id,
+                bib_number__isnull=False,
+            ).exclude(pk=self.pk).values_list('bib_number', flat=True)
+        )
+        number = self.distance.bib_start_number
+        while number in used:
+            number += 1
+        self.bib_number = number
+        return number
 
     def __str__(self):
         return f'{self.full_name} — {self.distance} ({self.get_status_display()})'

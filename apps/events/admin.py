@@ -51,7 +51,8 @@ class VenueInfoAdminForm(forms.ModelForm):
 class DistanceInline(admin.TabularInline):
     model = Distance
     extra = 1
-    fields = ['name', 'length_km', 'start_time', 'price', 'max_registrations', 'route_map_image', 'gpx_file']
+    fields = ['name', 'length_km', 'start_time', 'price', 'max_registrations',
+              'bib_start_number', 'route_map_image', 'gpx_file']
 
 
 class ScheduleItemInline(admin.TabularInline):

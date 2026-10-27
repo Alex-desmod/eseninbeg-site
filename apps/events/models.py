@@ -144,6 +144,7 @@ class Distance(models.Model):
         blank=True,
         help_text='Пусто — участие бесплатное'
     )
+    bib_start_number = models.PositiveIntegerField('Первый номер участника', default=1)
     route_map_image = models.ImageField(
         'Схема трассы',
         upload_to='events/routes/',
