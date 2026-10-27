@@ -151,6 +151,12 @@ class Distance(models.Model):
         blank=True
     )
     gpx_file = models.FileField('GPX трек', upload_to='events/gpx', blank=True)
+    max_registrations = models.PositiveIntegerField(
+        'Лимит регистраций',
+        null=True,
+        blank=True,
+        help_text='Максимум активных (не отменённых) регистраций на эту дистанцию. Пусто — без лимита'
+    )
 
     def __str__(self):
         return f'{self.event.title} - {self.name}'
