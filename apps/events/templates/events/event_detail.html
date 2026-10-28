@@ -218,6 +218,30 @@
     </details>
     {% endif %}
 
+    {# ---------- Participants ---------- #}
+    {% if has_participants %}
+    <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">
+
+        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
+                         px-6 py-2 md:px-10 flex items-center justify-between">
+
+            <span class="font-race text-brand-dark text-4xl md:text-5xl uppercase">
+                Участники
+            </span>
+
+            <span class="text-neutral-400 transition-transform group-open:rotate-180">
+                &#9662;
+            </span>
+
+        </summary>
+
+        <div class="details-content bg-white rounded-lg mt-2 px-6 py-6">
+            {% include 'events/partials/participants_list.html' %}
+        </div>
+
+    </details>
+    {% endif %}
+
     {# ---------- Bib pickup ---------- #}
     {% if event.bib_pickup %}
     <details class="group w-[90%] xl:w-[75%] mx-auto mt-2">

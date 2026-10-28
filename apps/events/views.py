@@ -1,8 +1,49 @@
+from django.core.paginator import Paginator
 from django.db import IntegrityError
+from django.db.models import F
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
 from .models import Event, DistanceRecord, WaitlistEntry
 from .forms import WaitlistForm
+
+PARTICIPANTS_PER_PAGE = 25
+
+
+def get_participants_context(event, request):
+    """Paid registrations of the event, paginated 25 per page and grouped
+    by distance within the current page (for per-distance tables)."""
+    registrations = (
+        event.registrations
+        .filter(status='paid')
+        .select_related('distance')
+        .order_by(
+            'distance_id',
+            F('bib_number').asc(nulls_last=True),
+            'surname',
+            'name',
+        )
+    )
+    paginator = Paginator(registrations, PARTICIPANTS_PER_PAGE)
+    page = paginator.get_page(request.GET.get('participants_page'))
+
+    groups = []
+    for registration in page.object_list:
+        if not groups or groups[-1]['distance'] != registration.distance:
+            groups.append({'distance': registration.distance, 'athletes': []})
+        groups[-1]['athletes'].append(registration)
+
+    return {
+        'participants_page': page,
+        'participant_groups': groups,
+        'has_participants': page.paginator.count > 0,
+    }
+
+
+def participants_list(request, slug):
+    event = get_object_or_404(Event, slug=slug)
+    context = get_participants_context(event, request)
+    context['event'] = event
+    return render(request, 'events/partials/participants_list.html', context)
 
 
 # Create your views here.
@@ -18,6 +59,7 @@ class EventDetailView(DetailView):
         context['records'] = DistanceRecord.objects.filter(
             distance__event=self.object
         ).select_related('distance')
+        context.update(get_participants_context(self.object, self.request))
         return context
 
 

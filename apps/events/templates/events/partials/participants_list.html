@@ -1,0 +1,64 @@
+<div id="participants-list">
+
+    {% for group in participant_groups %}
+    <div class="{% if not forloop.first %}mt-10{% endif %}">
+        <h3 class="text-center font-semibold mb-4">{{ group.distance.name }}</h3>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm md:text-base">
+                <thead>
+                    <tr class="text-xs md:text-sm uppercase tracking-widest text-neutral-500">
+                        <th scope="col" class="py-2 pr-4 font-medium">Фамилия, имя</th>
+                        <th scope="col" class="py-2 pr-4 font-medium">Год рождения</th>
+                        <th scope="col" class="py-2 pr-4 font-medium">Город</th>
+                        <th scope="col" class="py-2 font-medium text-right">Номер</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for athlete in group.athletes %}
+                    <tr class="border-t border-neutral-200">
+                        <td class="py-2 pr-4">{{ athlete.surname }} {{ athlete.name }}</td>
+                        <td class="py-2 pr-4">{{ athlete.birth_date|date:'Y' }}</td>
+                        <td class="py-2 pr-4">{{ athlete.city }}</td>
+                        <td class="py-2 tabular-nums text-right">{{ athlete.bib_number|default_if_none:'—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if participants_page.has_other_pages %}
+    <nav class="mt-8 flex items-center justify-center gap-4 text-sm">
+        {% if participants_page.has_previous %}
+        <a href="{% url 'events:detail' slug=event.slug %}?participants_page={{ participants_page.previous_page_number }}"
+           hx-get="{% url 'events:participants' slug=event.slug %}?participants_page={{ participants_page.previous_page_number }}"
+           hx-target="#participants-list"
+           hx-swap="outerHTML"
+           class="rounded-md border border-neutral-300 px-3 py-1.5 hover:border-neutral-500 transition-colors">
+            &#8249; Назад
+        </a>
+        {% else %}
+        <span class="text-neutral-300">&#8249; Назад</span>
+        {% endif %}
+
+        <span class="text-neutral-500">
+            Страница {{ participants_page.number }} из {{ participants_page.paginator.num_pages }}
+        </span>
+
+        {% if participants_page.has_next %}
+        <a href="{% url 'events:detail' slug=event.slug %}?participants_page={{ participants_page.next_page_number }}"
+           hx-get="{% url 'events:participants' slug=event.slug %}?participants_page={{ participants_page.next_page_number }}"
+           hx-target="#participants-list"
+           hx-swap="outerHTML"
+           class="rounded-md border border-neutral-300 px-3 py-1.5 hover:border-neutral-500 transition-colors">
+            Далее &#8250;
+        </a>
+        {% else %}
+        <span class="text-neutral-300">Далее &#8250;</span>
+        {% endif %}
+    </nav>
+    {% endif %}
+
+</div>

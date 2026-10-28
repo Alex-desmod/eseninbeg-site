@@ -7,12 +7,17 @@ FULL_NAME_RE = re.compile(r"^[А-ЯЁа-яёA-Za-z\-\s']+$")
 class ContactValidationMixin:
     """Name and phone validation for the forms with user contacts."""
 
+    @staticmethod
+    def validate_name(value, label='ФИО'):
+        value = value.strip()
+        if value and not FULL_NAME_RE.fullmatch(value):
+            raise ValidationError(f'{label} может содержать только буквы, пробелы и дефис')
+        return value
+
     def clean_full_name(self):
-        value = self.cleaned_data['full_name'].strip()
+        value = self.validate_name(self.cleaned_data['full_name'])
         if len(value.split()) < 2:
             raise ValidationError('Укажите фамилию и имя (минимум два слова)')
-        if not FULL_NAME_RE.fullmatch(value):
-            raise ValidationError('ФИО может содержать только буквы, пробелы и дефис')
         return value
 
     def clean_phone(self):

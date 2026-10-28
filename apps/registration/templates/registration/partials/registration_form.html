@@ -24,8 +24,8 @@
             <option value="">Выберите дистанцию</option>
             {% for distance in form.fields.distance.queryset %}
             <option value="{{ distance.pk }}"
-                    {% if form.distance.value|stringformat:"s" == distance.pk|stringformat:"s" %}selected{% endif %}>
-                {{ distance.name }}{% if distance.price %} — {{ distance.price }} ₽{% endif %}
+                {% if form.distance.value|stringformat:"s" == distance.pk|stringformat:"s" %}selected{% endif %}>
+                {{ distance.name }}{% if distance.price %} — {{ distance.price|floatformat:"0" }} ₽{% endif %}
             </option>
             {% endfor %}
         </select>
@@ -35,15 +35,41 @@
     </div>
 
     <div>
-        <label class="block text-sm mb-1" for="{{ form.full_name.id_for_label }}">ФИО атлета</label>
+        <label class="block text-sm mb-1" for="{{ form.surname.id_for_label }}">Фамилия</label>
         <input type="text"
-               id="{{ form.full_name.id_for_label }}"
-               name="{{ form.full_name.html_name }}"
-               value="{{ form.full_name.value|default:'' }}"
-               placeholder="Иван Иванович Иванов"
+               id="{{ form.surname.id_for_label }}"
+               name="{{ form.surname.html_name }}"
+               value="{{ form.surname.value|default:'' }}"
+               placeholder="Иванов"
                class="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-neutral-500">
-        {% if form.full_name.errors %}
-            <p class="text-xs text-red-600 mt-1">{{ form.full_name.errors.0 }}</p>
+        {% if form.surname.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.surname.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <label class="block text-sm mb-1" for="{{ form.name.id_for_label }}">Имя</label>
+        <input type="text"
+               id="{{ form.name.id_for_label }}"
+               name="{{ form.name.html_name }}"
+               value="{{ form.name.value|default:'' }}"
+               placeholder="Иван"
+               class="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-neutral-500">
+        {% if form.name.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.name.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <label class="block text-sm mb-1" for="{{ form.patronymic.id_for_label }}">Отчество <span class="text-neutral-400">(необязательно)</span></label>
+        <input type="text"
+               id="{{ form.patronymic.id_for_label }}"
+               name="{{ form.patronymic.html_name }}"
+               value="{{ form.patronymic.value|default:'' }}"
+               placeholder="Иванович"
+               class="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-neutral-500">
+        {% if form.patronymic.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.patronymic.errors.0 }}</p>
         {% endif %}
     </div>
 

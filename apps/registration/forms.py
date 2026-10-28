@@ -18,9 +18,11 @@ class RegistrationForm(ContactValidationMixin, HoneypotMixin, forms.ModelForm):
 
     class Meta:
         model = Registration
-        fields = ['distance', 'full_name', 'birth_date', 'gender', 'phone', 'email', 'city', 'club']
+        fields = ['distance', 'surname', 'name', 'patronymic', 'birth_date', 'gender', 'phone', 'email', 'city', 'club']
         widgets = {
-            'full_name': forms.TextInput(attrs={'autocomplete': 'name'}),
+            'surname': forms.TextInput(attrs={'autocomplete': 'family-name'}),
+            'name': forms.TextInput(attrs={'autocomplete': 'given-name'}),
+            'patronymic': forms.TextInput(attrs={'autocomplete': 'additional-name'}),
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
             'phone': forms.TextInput(attrs={'autocomplete': 'tel', 'inputmode': 'tel'}),
         }
@@ -38,19 +40,36 @@ class RegistrationForm(ContactValidationMixin, HoneypotMixin, forms.ModelForm):
             raise ValidationError('Дистанция не относится к выбранному событию')
         return distance
 
+    def clean_surname(self):
+        return self.validate_name(self.cleaned_data['surname'], 'Фамилия')
+
+    def clean_name(self):
+        return self.validate_name(self.cleaned_data['name'], 'Имя')
+
+    def clean_patronymic(self):
+        return self.validate_name(self.cleaned_data['patronymic'], 'Отчество')
+
     def clean(self):
         cleaned_data = super().clean()
         if self.event:
             self.instance.event = self.event
-        full_name = cleaned_data.get('full_name')
+        surname = cleaned_data.get('surname') or ''
+        name = cleaned_data.get('name') or ''
+        patronymic = cleaned_data.get('patronymic') or ''
         birth_date = cleaned_data.get('birth_date')
 
-        if self.event and full_name and birth_date:
+        if self.event and surname and name and birth_date:
             duplicate = Registration.objects.filter(
                 event=self.event,
-                full_name__iexact=full_name,
+                surname__iexact=surname,
+                name__iexact=name,
                 birth_date=birth_date,
             ).exclude(status='cancelled')
+            # Compare patronymics, treating a missing value as the empty string
+            if patronymic:
+                duplicate = duplicate.filter(patronymic__iexact=patronymic)
+            else:
+                duplicate = duplicate.filter(Q(patronymic='') | Q(patronymic__isnull=True))
             if self.instance.pk:
                 duplicate = duplicate.exclude(pk=self.instance.pk)
             if duplicate.exists():

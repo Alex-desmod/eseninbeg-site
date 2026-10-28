@@ -34,7 +34,9 @@ class Registration(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
-    full_name = models.CharField('ФИО атлета', max_length=200)
+    surname = models.CharField('Фамилия', max_length=100)
+    name = models.CharField('Имя', max_length=100)
+    patronymic = models.CharField('Отчество', max_length=100, blank=True)
     birth_date = models.DateField('Дата рождения')
     gender = models.CharField('Пол', max_length=10, choices=GENDER_CHOICES)
     phone = models.CharField('Телефон', max_length=20)
@@ -135,6 +137,11 @@ class Registration(models.Model):
             number += 1
         self.bib_number = number
         return number
+
+    @property
+    def full_name(self):
+        """'Фамилия Имя Отчество' for display."""
+        return ' '.join(part for part in (self.surname, self.name, self.patronymic) if part)
 
     def __str__(self):
         return f'{self.full_name} — {self.distance} ({self.get_status_display()})'

@@ -45,8 +45,12 @@ class RegistrationAdmin(ExportMixin, admin.ModelAdmin):
     ]
     list_filter = ['event', 'distance', 'status', 'gender']
     list_editable = ['status', 'bib_number']
-    search_fields = ['full_name', 'email', 'phone', 'city', 'club']
+    search_fields = ['surname', 'name', 'patronymic', 'email', 'phone', 'city', 'club']
     readonly_fields = ['created_at']
+
+    @admin.display(description='ФИО атлета', ordering='surname')
+    def full_name(self, obj):
+        return obj.full_name
 
     def get_changelist_form(self, request, **kwargs):
         """Changelist editing must use the same validating form."""
