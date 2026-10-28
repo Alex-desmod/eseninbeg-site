@@ -2,12 +2,16 @@ from import_export import resources
 from import_export.admin import ExportMixin
 from django import forms
 from django.contrib import admin
+from .forms import PlannedTimeField
 from .models import Registration
 
 
 class RegistrationForm(forms.ModelForm):
     """Validates bib number uniqueness at the form level so the admin shows a field
     error instead of a 500 from the DB constraint."""
+
+    # Same time formats as the public form (see PlannedTimeField for details)
+    planned_time = PlannedTimeField(required=False)
 
     class Meta:
         model = Registration

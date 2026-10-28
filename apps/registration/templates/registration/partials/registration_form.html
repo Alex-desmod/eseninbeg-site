@@ -103,6 +103,19 @@
     </div>
 
     <div>
+        <label class="block text-sm mb-1" for="{{ form.planned_time.id_for_label }}">Планируемое время <span class="text-neutral-400">(необязательно)</span></label>
+        <input type="text"
+               id="{{ form.planned_time.id_for_label }}"
+               name="{{ form.planned_time.html_name }}"
+               value="{{ form.planned_time.value|default:'' }}"
+               placeholder="0:49:59"
+               class="w-full border border-neutral-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-neutral-500">
+        {% if form.planned_time.errors %}
+            <p class="text-xs text-red-600 mt-1">{{ form.planned_time.errors.0 }}</p>
+        {% endif %}
+    </div>
+
+    <div>
         <label class="block text-sm mb-1" for="{{ form.phone.id_for_label }}">Телефон</label>
         <input type="text"
                id="{{ form.phone.id_for_label }}"

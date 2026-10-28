@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, render
 
 from apps.events.models import Event
+from .emails import send_registration_accepted
 from .forms import RegistrationForm, available_distances
 
 
@@ -25,6 +26,8 @@ def registration_form(request, slug):
                     'registration/partials/registration_form.html',
                     {'form': form, 'event': event},
                 )
+
+            send_registration_accepted(registration)
 
             return render(
                 request,

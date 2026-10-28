@@ -1,0 +1,23 @@
+Здравствуйте, {{ registration.name }}!
+
+Ваша заявка на "{{ event.title }}" принята.
+
+Дистанция: {{ registration.distance.name }}
+{% if registration.planned_time %}Планируемое время: {{ registration.planned_time }}
+{% endif %}
+{% if event.payment_recipient %}
+Стоимость участия: {{ registration.amount|floatformat:"0" }} ₽
+
+Чтобы завершить регистрацию, переведите сумму по телефону {{ event.payment_recipient_phone }}
+или номеру карты {{ event.payment_card_number }}
+(получатель: {{ event.payment_recipient }}, {{ event.payment_bank }}).
+В комментарии к переводу укажите "{{ event.title }}, ФИО участника".
+
+После проверки оплаты мы пришлём подтверждение и стартовый номер,
+а вы сможете найти себя в списке участников на сайте.
+Это может занять немного времени, так как администратор ленив ;)
+{% endif %}
+
+Информация о событии:
+{{ base_url }}{% url 'events:detail' event.slug %}
+

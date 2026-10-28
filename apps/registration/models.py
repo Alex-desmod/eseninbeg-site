@@ -3,6 +3,7 @@ from django.db.models import Q
 from decimal import Decimal
 
 from django.core.exceptions import ValidationError
+from .emails import send_payment_confirmed
 from ..events.models import Event, Distance
 
 
@@ -39,6 +40,12 @@ class Registration(models.Model):
     patronymic = models.CharField('Отчество', max_length=100, blank=True)
     birth_date = models.DateField('Дата рождения')
     gender = models.CharField('Пол', max_length=10, choices=GENDER_CHOICES)
+    planned_time = models.DurationField(
+        'Планируемое время',
+        null=True,
+        blank=True,
+        help_text='Планируемое время на дистанции, формат ЧЧ:ММ:СС, например 0:49:00'
+    )
     phone = models.CharField('Телефон', max_length=20)
     email = models.EmailField('E-mail')
     city = models.CharField('Город', max_length=100)
@@ -83,15 +90,15 @@ class Registration(models.Model):
             self.amount = self.distance.price if self.distance.price is not None else Decimal('0.00')
 
         payment_confirmed = False
-        if (
-            self.bib_number is None
-            and self.status == 'paid'
-            and self.distance_id
-        ):
+        if self.status == 'paid' and self.distance_id:
             was_paid = self.__class__.objects.filter(pk=self.pk, status='paid').exists()
             payment_confirmed = not was_paid
 
-        if payment_confirmed:
+        # Auto-assignment only when the admin did not type a number themselves;
+        # the notification is sent either way.
+        assign_bib_number = payment_confirmed and self.bib_number is None
+
+        if assign_bib_number:
             # The assigned number must actually be persisted
             update_fields = kwargs.get('update_fields')
             if update_fields is not None and 'bib_number' not in update_fields:
@@ -100,22 +107,25 @@ class Registration(models.Model):
         for attempt in range(3):
             try:
                 with transaction.atomic():
-                    if payment_confirmed:
+                    if assign_bib_number:
                         self.assign_bib_number()
                     super().save(*args, **kwargs)
                 break
             except IntegrityError as e:
-                if not payment_confirmed:
-                    # A manually set number collided with an existing one;
-                    # surface a proper validation error instead of a 500.
-                    if self._is_bib_number_conflict(e):
-                        raise ValidationError('Этот номер участника уже используется в этом событии')
+                if not self._is_bib_number_conflict(e):
                     raise
-                # A concurrent payment confirmation assigned the same number;
-                # pick the next free one and try again.
-                if attempt == 2:
-                    raise
-                self.bib_number = None
+                if assign_bib_number and attempt < 2:
+                    # A concurrent payment confirmation assigned the same number;
+                    # pick the next free one and try again.
+                    self.bib_number = None
+                    continue
+                # A manually set number collided with an existing one (or all
+                # retries failed); surface a proper validation error instead of a 500.
+                raise ValidationError('Этот номер участника уже используется в этом событии')
+
+        if payment_confirmed:
+            # Only reached when save() succeeded; sending must not break the save
+            send_payment_confirmed(self)
 
     @staticmethod
     def _is_bib_number_conflict(error):

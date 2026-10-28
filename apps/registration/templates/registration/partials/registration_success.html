@@ -1,9 +1,23 @@
 <div class="text-center py-6">
-    <h3 class="text-lg font-semibold">Регистрация принята!</h3>
+    <h3 class="text-lg font-semibold">Заявка принята!</h3>
     <p class="text-sm text-neutral-500 mt-2">
-        {{ registration.full_name }} — {{ registration.distance.name }}, «{{ event.title }}».
-        Статус заявки: ожидает оплаты. Мы свяжемся с вами по вопросу оплаты участия.
+        {{ registration.full_name }} — {{ registration.distance.name }}, "{{ event.title }}".
     </p>
+    {% if registration.amount %}
+    <p class="text-sm mt-2">
+        Чтобы завершить регистрацию, переведите {{ registration.amount|floatformat:"0" }}₽
+        по телефону {{ event.payment_recipient_phone }} или номеру карты {{ event.payment_card_number }}
+        (получатель: {{ event.payment_recipient }}, {{ event.payment_bank }}).
+        В комментарии к переводу укажите "{{ event.title }}, ФИО участника".
+    </p>
+    <p class="text-sm">
+        После проверки оплаты мы пришлём подтверждение и стартовый номер на {{ registration.email }},
+        а вы сможете найти себя в списке участников на сайте. Это может занять немного времени, так как администратор
+        ленив ;)
+    </p>
+    {% else %}
+    <p class="text-sm">Мы пришлём подтверждение и стартовый номер на {{ registration.email }}.</p>
+    {% endif %}
     <button type="button" onclick="document.getElementById('registration-dialog').close()"
             class="mt-4 bg-emerald-600 text-white text-base uppercase px-4 py-2 rounded-md hover:bg-emerald-800">Закрыть</button>
 </div>

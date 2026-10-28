@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<body style="margin:0; padding:0; background:#f5f5f5; font-family:Arial, Helvetica, sans-serif; color:#171717;">
+    <div style="max-width:600px; margin:24px auto; padding:24px; background:#ffffff; border-radius:8px;">
+        <p style="margin:0 0 16px;">Здравствуйте, <strong>{{ registration.name }}</strong>!</p>
+        <p style="margin:0 0 16px;">Ваша заявка на <strong>«{{ event.title }}»</strong> принята.</p>
+
+        <table style="margin:0 0 16px; border-collapse:collapse;">
+            <tr>
+                <td style="padding:2px 16px 2px 0; color:#737373;">Дистанция</td>
+                <td>{{ registration.distance.name }}</td>
+            </tr>
+            {% if registration.planned_time %}
+            <tr>
+                <td style="padding:2px 16px 2px 0; color:#737373;">Планируемое время</td>
+                <td>{{ registration.planned_time }}</td>
+            </tr>
+            {% endif %}
+        </table>
+
+        {% if event.payment_recipient %}
+        <div style="background:#f5f5f5; border-radius:8px; padding:16px; margin:0 0 16px;">
+            <p style="margin:0 0 8px;"><strong>Стоимость участия: {{ registration.amount|floatformat:"0" }} ₽</strong></p>
+            <p style="margin:0 0 8px;">
+                Чтобы завершить регистрацию, переведите сумму по телефону {{ event.payment_recipient_phone }}
+                или номеру карты {{ event.payment_card_number }}
+                (получатель: {{ event.payment_recipient }}, {{ event.payment_bank }}).
+            </p>
+            <p style="margin:8px 0 0; font-size:13px; color:#737373;">
+                В комментарии к переводу укажите "{{ event.title }}, ФИО участника".
+            </p>
+        </div>
+        <p style="margin:0 0 16px;">
+            После проверки оплаты мы пришлём подтверждение и стартовый номер,
+            а вы сможете найти себя в списке участников на сайте.
+            Это может занять немного времени, так как администратор ленив ;)
+        </p>
+        {% endif %}
+        <p style="margin:0 0 4px;">Информация о событии:</p>
+        <p style="margin:0 0 16px;">
+            <a href="{{ base_url }}{% url 'events:detail' event.slug %}" style="color:#047857;">
+                {{ event.title }}
+            </a>
+        </p>
+
+    </div>
+</body>
+</html>

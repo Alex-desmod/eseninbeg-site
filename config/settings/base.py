@@ -11,8 +11,15 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+import socket
 import dj_database_url
 from dotenv import load_dotenv
+
+# Windows quirk: socket.getfqdn() can return a name with a trailing dot,
+# which makes Django's Message-ID generation fail (idna "label empty").
+# Pre-seed the cached value with a cleaned-up name.
+from django.core.mail.utils import DNS_NAME
+DNS_NAME._fqdn = socket.getfqdn().rstrip('.') or 'localhost'
 from pathlib import Path
 
 load_dotenv()
@@ -158,3 +165,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# E-mail notifications for athletes (registration accepted / payment confirmed).
+# In development the console backend prints them to the terminal.
+SEND_REGISTRATION_EMAILS = True
+
+# Base URL for absolute links in emails (see production.py)
+BASE_URL = os.getenv('BASE_URL', 'http://127.0.0.1:8000')

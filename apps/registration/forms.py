@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Count, F, Q
@@ -7,8 +9,31 @@ from apps.events.models import Distance
 from .models import Registration
 
 
+class PlannedTimeField(forms.DurationField):
+    """Race time as ЧЧ:ММ or ЧЧ:ММ:СС (e.g. "1:50" = 1 hour 50 minutes).
+
+    Django's default DurationField parser treats "1:50" as 1 minute 50 seconds,
+    which almost never matches how runners write their target time."""
+
+    input_formats = ('%H:%M:%S', '%H:%M')
+
+    def to_python(self, value):
+        if value not in self.empty_values and not isinstance(value, datetime.timedelta):
+            for fmt in self.input_formats:
+                try:
+                    parsed = datetime.datetime.strptime(str(value).strip(), fmt).time()
+                except ValueError:
+                    continue
+                return datetime.timedelta(
+                    hours=parsed.hour, minutes=parsed.minute, seconds=parsed.second
+                )
+        return super().to_python(value)
+
+
 class RegistrationForm(ContactValidationMixin, HoneypotMixin, forms.ModelForm):
     website = forms.CharField(required=False, widget=forms.HiddenInput)
+
+    planned_time = PlannedTimeField(required=False, label='Планируемое время')
 
     consent = forms.BooleanField(
         label='Согласие на обработку персональных данных',
@@ -18,12 +43,14 @@ class RegistrationForm(ContactValidationMixin, HoneypotMixin, forms.ModelForm):
 
     class Meta:
         model = Registration
-        fields = ['distance', 'surname', 'name', 'patronymic', 'birth_date', 'gender', 'phone', 'email', 'city', 'club']
+        fields = ['distance', 'surname', 'name', 'patronymic', 'birth_date', 'gender',
+                  'planned_time', 'phone', 'email', 'city', 'club']
         widgets = {
             'surname': forms.TextInput(attrs={'autocomplete': 'family-name'}),
             'name': forms.TextInput(attrs={'autocomplete': 'given-name'}),
             'patronymic': forms.TextInput(attrs={'autocomplete': 'additional-name'}),
             'birth_date': forms.DateInput(attrs={'type': 'date'}),
+            'planned_time': forms.TextInput(attrs={'placeholder': '1:50:00'}),
             'phone': forms.TextInput(attrs={'autocomplete': 'tel', 'inputmode': 'tel'}),
         }
 
