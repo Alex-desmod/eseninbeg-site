@@ -1,6 +1,7 @@
+from datetime import date
+
 from django.core.paginator import Paginator
 from django.db import IntegrityError
-from django.db.models import F
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
 from .models import Event, DistanceRecord, WaitlistEntry
@@ -9,20 +10,31 @@ from .forms import WaitlistForm
 PARTICIPANTS_PER_PAGE = 25
 
 
+def russian_sort_key(value):
+    """Alphabetical sort key for Russian text: ё is normalized to е
+    (SQLite/Unicode code point order would place it after я or before а
+    depending on case), and the text is lowercased so mixed-case names
+    compare uniformly."""
+    return (value or '').lower().replace('ё', 'е')
+
+
 def get_participants_context(event, request):
     """Paid registrations of the event, paginated 25 per page and grouped
     by distance within the current page (for per-distance tables)."""
-    registrations = (
+    # Sorted in Python: SQLite cannot sort Russian text alphabetically
+    # (its LOWER() is ASCII-only and it compares by byte/code point).
+    registrations = list(
         event.registrations
         .filter(status='paid')
         .select_related('distance')
-        .order_by(
-            'distance_id',
-            F('bib_number').asc(nulls_last=True),
-            'surname',
-            'name',
-        )
     )
+    registrations.sort(key=lambda r: (
+        r.distance_id,
+        russian_sort_key(r.surname),
+        russian_sort_key(r.name),
+        r.birth_date or date.min,
+        r.pk,
+    ))
     paginator = Paginator(registrations, PARTICIPANTS_PER_PAGE)
     page = paginator.get_page(request.GET.get('participants_page'))
 
