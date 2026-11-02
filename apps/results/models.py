@@ -9,6 +9,8 @@ class ResultEntry(models.Model):
     CAT_CHOICES = [
         ('F 17', 'Ж 17'),
         ('F 18-34', 'Ж 18-34'),
+        ('F 18-29', 'Ж 18-29'),
+        ('F 30-34', 'Ж 30-34'),
         ('F 35-39', 'Ж 35-39'),
         ('F 40-44', 'Ж 40-44'),
         ('F 45-49', 'Ж 45-49'),
@@ -17,6 +19,8 @@ class ResultEntry(models.Model):
         ('F 60+', 'Ж 60+'),
         ('M 17', 'М 17'),
         ('M 18-34', 'М 18-34'),
+        ('M 18-29', 'М 18-29'),
+        ('M 30-34', 'М 30-34'),
         ('M 35-39', 'М 35-39'),
         ('M 40-44', 'М 40-44'),
         ('M 45-49', 'М 45-49'),
@@ -24,7 +28,11 @@ class ResultEntry(models.Model):
         ('M 55-59', 'М 55-59'),
         ('M 60+', 'М 60+'),
     ]
-    STATUS_CHOICES = ['DNF', 'DSQ', 'DNS']
+    STATUS_CHOICES = [
+        ('DNF', 'DNF'),
+        ('DSQ', 'DSQ'),
+        ('DNS', 'DNS'),
+    ]
 
     distance = models.ForeignKey(Distance, related_name='results', on_delete=models.CASCADE)
     year = models.PositiveSmallIntegerField('Год', db_index=True)
@@ -50,6 +58,10 @@ class ResultEntry(models.Model):
             models.UniqueConstraint(fields=['distance', 'year', 'place'], name='unique_place_per_distance_year'),
         ]
         indexes = [models.Index(fields=['distance', 'year', 'place'])]
+
+    @property
+    def full_name(self):
+        return f'{self.surname} {self.name}'.strip()
 
     def __str__(self):
         return f'{self.year} · {self.distance} · {self.place}. {self.full_name}'
