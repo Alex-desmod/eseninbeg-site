@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.gallery',
     'apps.shop',
-    'apps.registration'
+    'apps.registration',
+    'apps.results'
 ]
 
 MIDDLEWARE = [
