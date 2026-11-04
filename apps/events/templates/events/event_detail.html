@@ -61,14 +61,6 @@
         </button>
         {% endif %}
 
-        {% if event.results_url %}
-        <a href="{{ event.results_url }}" target="_blank" rel="noopener"
-           class="absolute right-4 bottom-4 px-4 py-2 md:px-6 sm:py-3 rounded-md text-sm md:text-2xl xl:text-xl font-bold uppercase
-                  bg-white/90 border border-emerald-600 text-emerald-700
-                  hover:bg-emerald-600 hover:text-white transition-colors">
-            Результаты
-        </a>
-        {% endif %}
     </div>
 
     {% if event.registration_mode == 'internal' %}
@@ -345,19 +337,42 @@
     </details>
     {% endif %}
 
-    {# ---------- Records ---------- #}
-    {% if records %}
+    {# ---------- Results ---------- #}
     <details id="records-details" class="group w-[90%] xl:w-[75%] mx-auto mt-2">
         <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none
                          px-6 py-2 md:px-10 flex items-center justify-between">
-            <span class="font-race text-brand-dark text-4xl md:text-5xl uppercase">Зал славы</span>
+            <span class="font-race text-brand-dark text-4xl md:text-5xl uppercase">Результаты</span>
             <span class="text-neutral-400 transition-transform group-open:rotate-180">&#9662;</span>
         </summary>
         <div class="details-content bg-white rounded-lg mt-2 px-6 py-6 space-y-10">
+            {% if event.results_url %}
+            <div class="flex justify-center">
+                <a href="{{ event.results_url }}" target="_blank" rel="noopener"
+                   class="inline-block px-6 py-3 rounded-md text-sm md:text-base xl:text-sm font-bold uppercase
+                          bg-white border border-emerald-600 text-emerald-700
+                          hover:bg-emerald-600 hover:text-white transition-colors">
+                   Последние результаты
+                </a>
+            </div>
+            {% endif %}
+
+            {% if result_years %}
+            <div class="grid grid-cols-3 md:grid-cols-6 xl:grid-cols-12 gap-3 md:gap-4">
+                {% for year in result_years %}
+                <a href="{% url 'results:protocol' slug=event.slug year=year %}"
+                   class="flex items-center justify-center rounded-md border border-neutral-300
+                          bg-neutral-50 px-2 py-4 text-base md:text-lg font-semibold text-brand-dark
+                          hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-colors">
+                    {{ year }}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% for distance in event.distances.all %}
                 {% if distance.records.exists %}
                     <div>
-                        <h3 class="text-center font-semibold mb-4">{{ distance.name }}</h3>
+                        <h3 class="text-center font-semibold mb-4">Рекорды</h3>
                         <div class="grid grid-cols-2 gap-6 md:gap-8">
                             {% for record in distance.records.all|dictsort:"gender" %}
                             <div>
@@ -369,7 +384,7 @@
                                 </div>
 
                                 <p class="text-sm text-center text-neutral-600">
-                                    {{ record.athlete }} - {{ record.result_time }} ({{ record.date|date:"Y" }})
+                                    {{ record.athlete }} - {{ record.result_time }} ({{ record.date|date:"Y" }}) {{ distance.name }}
                                 </p>
                                 {% endif %}
                             </div>
@@ -380,7 +395,6 @@
             {% endfor %}
         </div>
     </details>
-    {% endif %}
 
     {# ---------- Video ---------- #}
     {% for item in event.media_items.all %}

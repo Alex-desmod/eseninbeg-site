@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты {{ year }} — {{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="px-6 pt-6">
+    <a href="{% url 'events:detail' slug=event.slug %}"
+       class="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-brand-dark transition-colors">
+        <span aria-hidden="true">&larr;</span>
+        К событию
+    </a>
+</div>
+
+<section class="w-[90%] xl:w-[75%] mx-auto mt-6 bg-white rounded-lg px-6 py-10 md:px-10 md:py-14 text-center">
+    <h3 class="text-sm uppercase tracking-widest text-neutral-500">{{ event.title }} {{ year }}</h3>
+
+
+    <p class="mt-6 text-base md:text-lg text-neutral-600">
+        Протокол за {{ year }} год скоро появится здесь.
+    </p>
+
+    <a href="{% url 'events:detail' slug=event.slug %}"
+       class="mt-8 inline-block px-6 py-3 rounded-md text-sm md:text-base font-medium
+              border border-emerald-600 text-emerald-700
+              hover:bg-emerald-600 hover:text-white transition-colors">
+        Вернуться к событию
+    </a>
+</section>
+{% endblock %}

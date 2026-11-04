@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
+from apps.results.models import ResultEntry
 from .models import Event, DistanceRecord, WaitlistEntry
 from .forms import WaitlistForm
 
@@ -71,6 +72,12 @@ class EventDetailView(DetailView):
         context['records'] = DistanceRecord.objects.filter(
             distance__event=self.object
         ).select_related('distance')
+        context['result_years'] = list(
+            ResultEntry.objects.filter(distance__event=self.object)
+            .values_list('date__year', flat=True)
+            .distinct()
+            .order_by('-date__year')
+        )
         context.update(get_participants_context(self.object, self.request))
         return context
 
