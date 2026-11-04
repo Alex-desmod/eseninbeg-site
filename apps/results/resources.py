@@ -1,8 +1,8 @@
 """Import configuration for race protocols (Excel/CSV) of previous years.
 
 The protocol file columns are matched by their Russian headers. The distance and
-year are not part of the file; they are chosen by the admin in the import form
-and passed to ``import_data()`` as kwargs.
+event date are not part of the file; they are chosen by the admin in the import
+form and passed to ``import_data()`` as kwargs.
 """
 import datetime
 import re
@@ -187,7 +187,7 @@ class ResultTimeWidget(widgets.Widget):
 
 
 class ResultEntryResource(resources.ModelResource):
-    """Imports a protocol file for the distance and year passed in kwargs."""
+    """Imports a protocol file for the distance and date passed in kwargs."""
 
     place = fields.Field(
         attribute='place', column_name='Место', widget=IntegerValueWidget()
@@ -211,8 +211,11 @@ class ResultEntryResource(resources.ModelResource):
     gender_place = fields.Field(
         attribute='gender_place', column_name='Место М/Ж', widget=IntegerValueWidget()
     )
-    result_time = fields.Field(
-        attribute='result_time', column_name='Результат', widget=ResultTimeWidget()
+    chip_time = fields.Field(
+        attribute='chip_time', column_name='Результат', widget=ResultTimeWidget()
+    )
+    gun_time = fields.Field(
+        attribute='gun_time', column_name='Абсолютный результат', widget=ResultTimeWidget()
     )
     status = fields.Field(
         attribute='status', column_name='Статус', widget=StatusWidget()
@@ -225,8 +228,8 @@ class ResultEntryResource(resources.ModelResource):
         import_id_fields = ['id']
 
     def before_import(self, dataset, **kwargs):
-        if kwargs.get('distance') is None or kwargs.get('year') is None:
-            raise ValueError('Не выбраны дистанция и год импорта')
+        if kwargs.get('distance') is None or kwargs.get('date') is None:
+            raise ValueError('Не выбраны дистанция и дата импорта')
 
         headers = [cleanup_text(header) for header in (dataset.headers or [])]
         dataset.headers = headers
@@ -249,4 +252,4 @@ class ResultEntryResource(resources.ModelResource):
 
     def before_save_instance(self, instance, row, **kwargs):
         instance.distance = kwargs['distance']
-        instance.year = kwargs['year']
+        instance.date = kwargs['date']

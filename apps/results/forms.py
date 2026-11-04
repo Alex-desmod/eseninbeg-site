@@ -6,34 +6,33 @@ from .models import ResultEntry
 
 
 class ResultImportForm(ImportForm):
-    """Import form: the admin picks the distance and the year of the protocol."""
+    """Import form: the admin picks the distance and the date of the protocol."""
 
     distance = forms.ModelChoiceField(
         queryset=Distance.objects.select_related('event').order_by('event__title', 'name'),
         label='Дистанция',
         help_text='Протокол будет импортирован для выбранной дистанции',
     )
-    year = forms.IntegerField(
-        label='Год',
-        min_value=1900,
-        max_value=2100,
-        help_text='Год проведения забега',
+    date = forms.DateField(
+        label='Дата события',
+        widget=forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+        help_text='Дата проведения забега',
     )
 
     def clean(self):
         cleaned_data = super().clean()
         distance = cleaned_data.get('distance')
-        year = cleaned_data.get('year')
-        if distance and year and ResultEntry.objects.filter(distance=distance, year=year).exists():
+        date = cleaned_data.get('date')
+        if distance and date and ResultEntry.objects.filter(distance=distance, date=date).exists():
             raise forms.ValidationError(
-                f'Результаты для дистанции «{distance}» за {year} год уже импортированы. '
+                f'Результаты для дистанции «{distance}» за {date:%d.%m.%Y} уже импортированы. '
                 'Удалите их перед повторным импортом.'
             )
         return cleaned_data
 
 
 class ResultConfirmImportForm(ConfirmImportForm):
-    """Second (confirm) step: keeps the distance and year chosen on the first step."""
+    """Second (confirm) step: keeps the distance and date chosen on the first step."""
 
     distance = forms.ModelChoiceField(queryset=Distance.objects.all(), widget=forms.HiddenInput)
-    year = forms.IntegerField(widget=forms.HiddenInput)
+    date = forms.DateField(widget=forms.HiddenInput, input_formats=['%Y-%m-%d'])

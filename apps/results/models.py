@@ -17,6 +17,9 @@ class ResultEntry(models.Model):
         ('F 50-54', 'Ж 50-54'),
         ('F 55-59', 'Ж 55-59'),
         ('F 60+', 'Ж 60+'),
+        ('F 60-64', 'Ж 60-64'),
+        ('F 65-69', 'Ж 65-69'),
+        ('F 70+', 'Ж 70+'),
         ('M 17', 'М 17'),
         ('M 18-34', 'М 18-34'),
         ('M 18-29', 'М 18-29'),
@@ -27,6 +30,9 @@ class ResultEntry(models.Model):
         ('M 50-54', 'М 50-54'),
         ('M 55-59', 'М 55-59'),
         ('M 60+', 'М 60+'),
+        ('M 60-64', 'М 60-64'),
+        ('M 65-69', 'М 65-69'),
+        ('M 70+', 'М 70+'),
     ]
     STATUS_CHOICES = [
         ('DNF', 'DNF'),
@@ -35,7 +41,7 @@ class ResultEntry(models.Model):
     ]
 
     distance = models.ForeignKey(Distance, related_name='results', on_delete=models.CASCADE)
-    year = models.PositiveSmallIntegerField('Год', db_index=True)
+    date = models.DateField('Дата события', db_index=True)
     gender = models.CharField('Пол', choices=GENDER_CHOICES, max_length=8)
     category = models.CharField('Категория', choices=CAT_CHOICES, max_length=8, blank=True)
     place = models.PositiveSmallIntegerField('Место в абсолюте', null=True, blank=True)
@@ -47,21 +53,22 @@ class ResultEntry(models.Model):
     country = models.CharField('Страна', max_length=100, blank=True)
     city = models.CharField('Город', max_length=100, blank=True)
     club = models.CharField('Клуб', max_length=100, blank=True)
-    result_time = models.DurationField('Результат', null=True, blank=True)
+    chip_time = models.DurationField('Результат', null=True, blank=True)
+    gun_time = models.DurationField('Абсолютный результат', null=True, blank=True)
     status = models.CharField('Статус', choices=STATUS_CHOICES, max_length=5, blank=True)
 
     class Meta:
-        ordering = ['year', 'place']
+        ordering = ['date', 'place']
         verbose_name = 'Результат'
         verbose_name_plural = 'Результаты'
         constraints = [
-            models.UniqueConstraint(fields=['distance', 'year', 'place'], name='unique_place_per_distance_year'),
+            models.UniqueConstraint(fields=['distance', 'date', 'place'], name='unique_place_per_distance_date'),
         ]
-        indexes = [models.Index(fields=['distance', 'year', 'place'])]
+        indexes = [models.Index(fields=['distance', 'date', 'place'])]
 
     @property
     def full_name(self):
         return f'{self.surname} {self.name}'.strip()
 
     def __str__(self):
-        return f'{self.year} · {self.distance} · {self.place}. {self.full_name}'
+        return f'{self.date:%d.%m.%Y} · {self.distance} · {self.place}. {self.full_name}'
