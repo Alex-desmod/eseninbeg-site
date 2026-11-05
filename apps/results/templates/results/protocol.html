@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Результаты {{ year }} — {{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="px-6 pt-6">
+    <a href="{% url 'events:detail' slug=event.slug %}"
+       class="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-brand-dark transition-colors">
+        <span aria-hidden="true">&larr;</span>
+        К событию
+    </a>
+</div>
+
+<section class="w-[90%] xl:w-[75%] mx-auto mt-6 bg-white rounded-lg px-6 py-8 md:px-10 md:py-10">
+    <div class="text-center">
+        <h1 class="font-race text-brand-dark text-4xl md:text-5xl uppercase">
+            {{ event.title }}
+        </h1>
+        {% if result_date %}
+        <p class="mt-2 text-sm md:text-base uppercase tracking-widest text-neutral-500">
+            {{ result_date|date:"j E Y" }}
+        </p>
+        {% endif %}
+    </div>
+
+    {% if distances|length > 1 %}
+    <div class="mt-8 flex flex-wrap justify-center gap-2">
+        {% for item in distances %}
+        <a href="{% querystring distance=item.pk page=None %}"
+           class="rounded-md border px-4 py-2 text-sm font-medium transition-colors
+                  {% if item.pk == distance.pk %}border-brand-dark bg-brand-dark text-white{% else %}border-neutral-300 text-neutral-600 hover:border-neutral-500{% endif %}">
+            {{ item.name }}
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="mt-8 text-center text-sm uppercase tracking-widest text-neutral-500">
+        {{ distance.name }}
+    </p>
+    {% endif %}
+
+    <form method="get" class="mt-6 flex flex-wrap items-end justify-center gap-3">
+        <input type="hidden" name="distance" value="{{ distance.pk }}">
+
+        <div>
+            <label for="gender-filter" class="block text-xs uppercase tracking-widest text-neutral-500 mb-1">
+                Пол
+            </label>
+            <select id="gender-filter" name="gender" onchange="this.form.submit()"
+                    class="border border-neutral-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:border-neutral-500">
+                <option value="">Все</option>
+                {% for value, label in gender_choices %}
+                <option value="{{ value }}"{% if gender == value %} selected{% endif %}>
+                    {{ label|capfirst }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="category-filter" class="block text-xs uppercase tracking-widest text-neutral-500 mb-1">
+                Категория
+            </label>
+            <select id="category-filter" name="category" onchange="this.form.submit()"
+                    class="border border-neutral-300 rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:border-neutral-500">
+                <option value="">Все</option>
+                {% for value, label in categories %}
+                <option value="{{ value }}"{% if category == value %} selected{% endif %}>
+                    {{ label }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+    </form>
+
+    <div class="mt-6 overflow-x-auto">
+        <table class="w-full text-left text-xs md:text-sm">
+            <thead>
+                <tr class="md:text-sm uppercase tracking-widest text-neutral-500">
+                    <th scope="col" class="py-2 pr-4 font-medium">Место</th>
+                    <th scope="col" class="py-2 pr-4 font-medium">Участник</th>
+                    <th scope="col" class="py-2 pr-4 font-medium text-right">Результат (chip)</th>
+                    <th scope="col" class="py-2 font-medium text-right">Результат (gun)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in results_page %}
+                <tr class="border-t border-neutral-200 cursor-pointer hover:bg-neutral-50 transition-colors"
+                    data-result-id="{{ entry.pk }}">
+                    <td class="py-3 pr-4 tabular-nums">
+                        {% if entry.status %}
+                        <span class="inline-block rounded bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-600">
+                            {{ entry.status }}
+                        </span>
+                        {% elif entry.position == 1 %}
+                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-yellow-400 font-semibold text-yellow-950 shadow-sm">
+                            {{ entry.position }}
+                        </span>
+                        {% elif entry.position == 2 %}
+                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-neutral-300 font-semibold text-neutral-900 shadow-sm">
+                            {{ entry.position }}
+                        </span>
+                        {% elif entry.position == 3 %}
+                        <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-dark font-semibold text-white shadow-sm">
+                            {{ entry.position }}
+                        </span>
+                        {% else %}
+                        {{ entry.position|default:'—' }}
+                        {% endif %}
+                    </td>
+                    <td class="py-3 pr-4">
+                        <div class="font-medium">{{ entry.surname }} {{ entry.name }}</div>
+                        <div class="text-[11px] text-neutral-500">
+                            № {{ entry.bib_number }}{% if entry.category %} · {{ entry.get_category_display }}{% endif %}
+                        </div>
+                    </td>
+                    <td class="py-3 pr-4 tabular-nums text-right">{{ entry.chip_time|default:'—' }}</td>
+                    <td class="py-3 tabular-nums text-right">{{ entry.gun_time|default:'—' }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="py-6 text-center text-neutral-500">
+                        Нет результатов по выбранным фильтрам.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if results_page.has_other_pages %}
+    <nav class="mt-8 flex items-center justify-center gap-4 text-sm">
+        {% if results_page.has_previous %}
+        <a href="{% querystring page=results_page.previous_page_number %}"
+           class="rounded-md border border-neutral-300 px-3 py-1.5 hover:border-neutral-500 transition-colors">
+            &#8249; Назад
+        </a>
+        {% else %}
+        <span class="text-neutral-300">&#8249; Назад</span>
+        {% endif %}
+
+        <span class="text-neutral-500">
+            Страница {{ results_page.number }} из {{ results_page.paginator.num_pages }}
+        </span>
+
+        {% if results_page.has_next %}
+        <a href="{% querystring page=results_page.next_page_number %}"
+           class="rounded-md border border-neutral-300 px-3 py-1.5 hover:border-neutral-500 transition-colors">
+            Далее &#8250;
+        </a>
+        {% else %}
+        <span class="text-neutral-300">Далее &#8250;</span>
+        {% endif %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

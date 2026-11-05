@@ -9,7 +9,10 @@
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-red-700: oklch(50.5% 0.213 27.518);
     --color-red-900: oklch(39.6% 0.141 25.723);
+    --color-amber-600: oklch(66.6% 0.179 58.318);
+    --color-yellow-400: oklch(85.2% 0.199 91.936);
     --color-yellow-500: oklch(79.5% 0.184 86.047);
+    --color-yellow-950: oklch(28.6% 0.066 53.813);
     --color-emerald-400: oklch(76.5% 0.177 163.223);
     --color-emerald-600: oklch(59.6% 0.145 163.225);
     --color-emerald-700: oklch(50.8% 0.118 165.612);
@@ -828,6 +831,9 @@
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
+  .h-7 {
+    height: calc(var(--spacing) * 7);
+  }
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
@@ -872,6 +878,9 @@
   }
   .w-6 {
     width: calc(var(--spacing) * 6);
+  }
+  .w-7 {
+    width: calc(var(--spacing) * 7);
   }
   .w-8 {
     width: calc(var(--spacing) * 8);
@@ -1007,6 +1016,9 @@
   .items-center {
     align-items: center;
   }
+  .items-end {
+    align-items: flex-end;
+  }
   .items-start {
     align-items: flex-start;
   }
@@ -1107,6 +1119,9 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
+  .border-brand-dark {
+    border-color: var(--color-brand-dark);
+  }
   .border-emerald-600 {
     border-color: var(--color-emerald-600);
   }
@@ -1130,6 +1145,9 @@
   }
   .border-neutral-900 {
     border-color: var(--color-neutral-900);
+  }
+  .bg-amber-600 {
+    background-color: var(--color-amber-600);
   }
   .bg-black\/20 {
     background-color: color-mix(in srgb, #000 20%, transparent);
@@ -1197,6 +1215,9 @@
       background-color: color-mix(in oklab, var(--color-white) 90%, transparent);
     }
   }
+  .bg-yellow-400 {
+    background-color: var(--color-yellow-400);
+  }
   .bg-cover {
     background-size: cover;
   }
@@ -1241,6 +1262,9 @@
   }
   .px-8 {
     padding-inline: calc(var(--spacing) * 8);
+  }
+  .py-0\.5 {
+    padding-block: calc(var(--spacing) * 0.5);
   }
   .py-1\.5 {
     padding-block: calc(var(--spacing) * 1.5);
@@ -1347,6 +1371,9 @@
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
   }
+  .text-\[11px\] {
+    font-size: 11px;
+  }
   .leading-none {
     --tw-leading: 1;
     line-height: 1;
@@ -1444,6 +1471,9 @@
   }
   .text-yellow-500 {
     color: var(--color-yellow-500);
+  }
+  .text-yellow-950 {
+    color: var(--color-yellow-950);
   }
   .uppercase {
     text-transform: uppercase;
@@ -1697,6 +1727,13 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-emerald-800);
+      }
+    }
+  }
+  .hover\:bg-neutral-50 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-neutral-50);
       }
     }
   }
@@ -2041,9 +2078,9 @@
       padding-block: calc(var(--spacing) * 5);
     }
   }
-  .md\:py-14 {
+  .md\:py-10 {
     @media (width >= 48rem) {
-      padding-block: calc(var(--spacing) * 14);
+      padding-block: calc(var(--spacing) * 10);
     }
   }
   .md\:text-2xl {
