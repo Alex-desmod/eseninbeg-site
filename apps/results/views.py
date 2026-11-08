@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator
-from django.db.models import Case, F, IntegerField, Value, When
+from django.db.models import Case, Count, F, IntegerField, Value, When
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
@@ -98,6 +98,23 @@ def protocol(request, slug, year):
     results_page = Paginator(filtered_results, RESULTS_PER_PAGE).get_page(
         request.GET.get('page')
     )
+
+    # Totals for the whole protocol (unaffected by the table filters) so the
+    # athlete details can show places as "15/500".
+    protocol_results = results.filter(date=result_date)
+    total_athletes = protocol_results.count()
+    gender_totals = dict(
+        protocol_results.values_list('gender').annotate(total=Count('pk'))
+    )
+    category_totals = dict(
+        protocol_results.exclude(category='')
+        .values_list('category')
+        .annotate(total=Count('pk'))
+    )
+    for entry in results_page:
+        entry.total_athletes = total_athletes
+        entry.gender_athletes = gender_totals.get(entry.gender, 0)
+        entry.category_athletes = category_totals.get(entry.category, 0)
 
     return render(
         request,

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Результаты {{ year }} — {{ event.title }}{% endblock %}
 
@@ -86,8 +87,13 @@
             </thead>
             <tbody>
                 {% for entry in results_page %}
-                <tr class="border-t border-neutral-200 cursor-pointer hover:bg-neutral-50 transition-colors"
-                    data-result-id="{{ entry.pk }}">
+                <tr class="border-t border-neutral-200 cursor-pointer hover:bg-neutral-50 focus:outline-none focus-visible:bg-neutral-100 transition-colors"
+                    data-result-toggle
+                    data-result-id="{{ entry.pk }}"
+                    role="button"
+                    tabindex="0"
+                    aria-expanded="false"
+                    aria-controls="result-details-{{ entry.pk }}">
                     <td class="py-3 pr-4 tabular-nums">
                         {% if entry.status %}
                         <span class="inline-block rounded bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-600">
@@ -117,6 +123,73 @@
                     </td>
                     <td class="py-3 pr-4 tabular-nums text-right">{{ entry.chip_time|default:'—' }}</td>
                     <td class="py-3 tabular-nums text-right">{{ entry.gun_time|default:'—' }}</td>
+                </tr>
+                <tr id="result-details-{{ entry.pk }}" class="hidden">
+                    <td colspan="4" class="border-t border-neutral-200 bg-neutral-50 px-4 py-5 md:px-6">
+                        <div class="grid gap-5 text-sm sm:grid-cols-2 xl:grid-cols-4">
+                            <div>
+                                <p class="mt-2 text-lg font-medium">{{ entry.full_name }}</p>
+                                {% if entry.category %}
+                                <p class="text-xs text-neutral-600">{{ entry.get_category_display }}</p>
+                                {% endif %}
+                                <p class="text-xs text-neutral-600">
+                                    {% if entry.country %}{{ entry.country }}{% endif %}
+                                    {% if entry.city %}, {{ entry.city }}{% endif %}
+                                    {% if entry.club %}, "{{ entry.club }}"{% endif %}
+                                </p>
+                            </div>
+
+                            {% if entry.chip_time or entry.gun_time %}
+                            <div>
+                                <p class="text-[11px] uppercase tracking-widest text-neutral-400">Время</p>
+                                <dl class="mt-1 space-y-1">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <dt class="text-neutral-500">Chip</dt>
+                                        <dd class="font-medium tabular-nums">{{ entry.chip_time|default:'—' }}</dd>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-3">
+                                        <dt class="text-neutral-500">Gun</dt>
+                                        <dd class="font-medium tabular-nums">{{ entry.gun_time|default:'—' }}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            {% endif %}
+
+                            {% if entry.place or entry.gender_place or entry.category_place %}
+                            <div>
+                                <p class="text-[11px] uppercase tracking-widest text-neutral-400">Место</p>
+                                <div class="mt-1 space-y-1">
+                                    {% if entry.place %}
+                                    <p class="flex items-center justify-between gap-3">
+                                        <span class="text-neutral-500">Абсолют</span>
+                                        <span class="font-medium tabular-nums">{{ entry.place }}/{{ entry.total_athletes }}</span>
+                                    </p>
+                                    {% endif %}
+                                    {% if entry.gender_place %}
+                                    <p class="flex items-center justify-between gap-3">
+                                        <span class="text-neutral-500">Среди {% if entry.gender == 'male' %}мужчин{% else %}женщин{% endif %}</span>
+                                        <span class="font-medium tabular-nums">{{ entry.gender_place }}/{{ entry.gender_athletes }}</span>
+                                    </p>
+                                    {% endif %}
+                                    {% if entry.category_place %}
+                                    <p class="flex items-center justify-between gap-3">
+                                        <span class="text-neutral-500">В категории</span>
+                                        <span class="font-medium tabular-nums">{{ entry.category_place }}{% if entry.category_athletes %}/{{ entry.category_athletes }}{% endif %}</span>
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if not entry.chip_time and not entry.gun_time and not entry.place and not entry.gender_place and not entry.category_place and entry.status %}
+                        <p class="mt-4">
+                            <span class="inline-block rounded bg-neutral-200 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-neutral-700">
+                                {{ entry.status }}
+                            </span>
+                        </p>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -155,4 +228,6 @@
     </nav>
     {% endif %}
 </section>
+
+<script src="{% static 'js/results-accordion.js' %}" defer></script>
 {% endblock %}
