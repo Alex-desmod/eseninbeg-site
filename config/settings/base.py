@@ -145,6 +145,11 @@ AXES_FAILURE_LIMIT = 5              # max failure attempts
 AXES_COOLOFF_TIME = 1               # blocking time (hours)
 AXES_LOCKOUT_PARAMETERS = ['username', 'ip_address']
 
+# Bulk-deleting results in the admin posts one `_selected_action` field per row.
+# Protocol tables can contain thousands of results, so the default limit of 1000
+# fields makes "select all" deletion fail with DATA_UPLOAD_MAX_NUMBER_FIELDS.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10_000
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
