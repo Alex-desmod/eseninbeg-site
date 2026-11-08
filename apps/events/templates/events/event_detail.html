@@ -357,10 +357,10 @@
             {% endif %}
 
             {% if result_years %}
-            <div class="grid grid-cols-3 md:grid-cols-6 xl:grid-cols-12 gap-3 md:gap-4">
+            <div class="flex flex-wrap justify-center gap-3 md:gap-4">
                 {% for year in result_years %}
                 <a href="{% url 'results:protocol' slug=event.slug year=year %}"
-                   class="flex items-center justify-center rounded-md border border-neutral-300
+                   class="flex w-20 items-center justify-center rounded-md border border-neutral-300
                           bg-neutral-50 px-2 py-4 text-base md:text-lg font-semibold text-brand-dark
                           hover:bg-brand-dark hover:text-white hover:border-brand-dark transition-colors">
                     {{ year }}
