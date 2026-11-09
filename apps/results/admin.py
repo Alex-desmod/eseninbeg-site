@@ -2,8 +2,38 @@ from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
 from .forms import ResultConfirmImportForm, ResultImportForm
-from .models import ResultEntry
+from .models import Checkpoint, ResultEntry, Split
 from .resources import ResultEntryResource
+
+
+class SplitInline(admin.TabularInline):
+    model = Split
+    extra = 0
+    fields = ['checkpoint', 'time']
+    ordering = ['checkpoint__order']
+
+    def get_formset(self, request, obj=None, **kwargs):
+        # Keep the parent result so the checkpoint list can be limited to its distance.
+        request._split_parent_obj = obj
+        return super().get_formset(request, obj, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'checkpoint':
+            parent = getattr(request, '_split_parent_obj', None)
+            if parent is not None:
+                kwargs['queryset'] = Checkpoint.objects.filter(
+                    distance=parent.distance
+                )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+@admin.register(Checkpoint)
+class CheckpointAdmin(admin.ModelAdmin):
+    list_display = ['name', 'length_km', 'distance', 'order']
+    list_filter = ['distance__event', 'distance']
+    search_fields = ['name', 'distance__name']
+    list_select_related = ['distance', 'distance__event']
+    ordering = ['distance', 'order']
 
 
 @admin.register(ResultEntry)
@@ -11,6 +41,7 @@ class ResultEntryAdmin(ImportExportModelAdmin):
     resource_classes = [ResultEntryResource]
     import_form_class = ResultImportForm
     confirm_form_class = ResultConfirmImportForm
+    inlines = [SplitInline]
 
     list_display = [
         'place', 'bib_number', 'full_name', 'distance', 'date', 'gender',

@@ -1,10 +1,10 @@
 from django.core.paginator import Paginator
-from django.db.models import Case, Count, F, IntegerField, Value, When
+from django.db.models import Case, Count, F, IntegerField, Prefetch, Value, When
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
 from apps.events.models import Distance, Event
-from .models import ResultEntry
+from .models import ResultEntry, Split
 
 RESULTS_PER_PAGE = 50
 
@@ -93,6 +93,13 @@ def protocol(request, slug, year):
         'surname',
         'name',
         'bib_number',
+    ).select_related('distance').prefetch_related(
+        Prefetch(
+            'splits',
+            queryset=Split.objects.select_related('checkpoint').order_by(
+                'checkpoint__order'
+            ),
+        )
     )
 
     results_page = Paginator(filtered_results, RESULTS_PER_PAGE).get_page(

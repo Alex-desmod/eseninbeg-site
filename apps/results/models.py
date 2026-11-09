@@ -1,5 +1,19 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from apps.events.models import Distance
+
+
+def format_pace(duration, distance_km):
+    """Return pace as ``M:SS`` minutes per kilometre, or ``None``."""
+    if not duration or not distance_km:
+        return None
+    seconds = duration.total_seconds()
+    distance = float(distance_km)
+    if seconds <= 0 or distance <= 0:
+        return None
+    minutes, seconds = divmod(round(seconds / distance), 60)
+    return f'{minutes}:{seconds:02d}'
+
 
 class ResultEntry(models.Model):
     GENDER_CHOICES = [
@@ -72,5 +86,57 @@ class ResultEntry(models.Model):
     def full_name(self):
         return f'{self.surname} {self.name}'.strip()
 
+    @property
+    def chip_pace(self):
+        return format_pace(self.chip_time, self.distance.length_km)
+
+    @property
+    def gun_pace(self):
+        return format_pace(self.gun_time, self.distance.length_km)
+
     def __str__(self):
         return f'{self.date:%d.%m.%Y} · {self.distance} · {self.place}. {self.full_name}'
+
+
+class Checkpoint(models.Model):
+    distance = models.ForeignKey(Distance, related_name='checkpoints', on_delete=models.CASCADE)
+    name = models.CharField('Название точки', max_length=100)
+    length_km = models.DecimalField(max_digits=5, decimal_places=2)
+    order = models.PositiveSmallIntegerField('Порядок', default=0)
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Промежуточная точка'
+        verbose_name_plural = 'Промежуточные точки'
+        constraints = [
+            models.UniqueConstraint(fields=['distance', 'name'], name='unique_checkpoint_name_per_distance'),
+        ]
+
+    def __str__(self):
+        return f'{self.distance} — {self.name}'
+
+    @property
+    def length_display(self):
+        """Length without trailing zeros, using a decimal comma."""
+        return f'{self.length_km.normalize():f}'.replace('.', ',')
+
+
+class Split(models.Model):
+    result = models.ForeignKey(ResultEntry, related_name='splits', on_delete=models.CASCADE)
+    checkpoint = models.ForeignKey(Checkpoint, related_name='splits', on_delete=models.CASCADE)
+    time = models.DurationField('Время на точке', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Промежуточное время'
+        verbose_name_plural = 'Промежуточные времена'
+        constraints = [
+            models.UniqueConstraint(fields=['result', 'checkpoint'], name='unique_split_per_result_checkpoint'),
+        ]
+
+    @property
+    def pace(self):
+        return format_pace(self.time, self.checkpoint.length_km)
+
+    def clean(self):
+        if self.result_id and self.checkpoint_id and self.checkpoint.distance_id != self.result.distance_id:
+            raise ValidationError('Точка относится к другой дистанции.')

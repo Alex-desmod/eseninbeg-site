@@ -9,10 +9,16 @@ import re
 
 from import_export import fields, resources, widgets
 
-from .models import ResultEntry
+from .models import Checkpoint, ResultEntry, Split
 
 # Values that protocols use to mark an empty cell.
 EMPTY_VALUES = {'', '-', '—', '–'}
+
+# Split columns are named like "CP1_Разворот". Only the part after the
+# underscore is the checkpoint name; the CP number is just a column label.
+SPLIT_COLUMN_RE = re.compile(r'^CP\d+_(.+)$', re.IGNORECASE)
+# Key used to pass parsed split times from before_import_row to after_save_instance.
+SPLIT_ROW_KEY = '__split_times__'
 
 # Columns the protocol must contain.
 REQUIRED_COLUMNS = (
@@ -32,6 +38,10 @@ TIME_RE = re.compile(r'^(?:(\d+):)?(\d{1,2}):(\d{2})(?:[.,](\d{1,6}))?$')
 
 # Cyrillic letters are translated to their Latin counterparts used by the model.
 CATEGORY_TRANSLATION = str.maketrans({'Ж': 'F', 'М': 'M'})
+
+# City names often carry a "г." / "город" marker: "г Москва", "Москва г.".
+CITY_PREFIX_RE = re.compile(r'^(?:г\.\s*|г\s+|город\s+)', re.IGNORECASE)
+CITY_SUFFIX_RE = re.compile(r'(?:[,\s]+)(?:г\.?|город)$', re.IGNORECASE)
 
 
 def is_empty(value):
@@ -118,6 +128,18 @@ class ClubWidget(TextWidget):
         return text
 
 
+class CityWidget(TextWidget):
+    """Strip the "г." / "город" marker: "г Москва" / "Москва г." → "Москва"."""
+
+    def clean(self, value, row=None, **kwargs):
+        text = super().clean(value, row, **kwargs)
+        if not text:
+            return text
+        text = CITY_PREFIX_RE.sub('', text)
+        text = CITY_SUFFIX_RE.sub('', text)
+        return text.strip(' ,.')
+
+
 class CategoryWidget(TextWidget):
     def clean(self, value, row=None, **kwargs):
         return normalize_category(value)
@@ -186,6 +208,9 @@ class ResultTimeWidget(widgets.Widget):
         )
 
 
+SPLIT_TIME_WIDGET = ResultTimeWidget()
+
+
 class ResultEntryResource(resources.ModelResource):
     """Imports a protocol file for the distance and date passed in kwargs."""
 
@@ -198,7 +223,7 @@ class ResultEntryResource(resources.ModelResource):
     surname = fields.Field(attribute='surname', column_name='Фамилия', widget=TextWidget())
     name = fields.Field(attribute='name', column_name='Имя', widget=TextWidget())
     country = fields.Field(attribute='country', column_name='Страна', widget=TextWidget())
-    city = fields.Field(attribute='city', column_name='Город', widget=TextWidget())
+    city = fields.Field(attribute='city', column_name='Город', widget=CityWidget())
     club = fields.Field(attribute='club', column_name='Клуб', widget=ClubWidget())
     category = fields.Field(
         attribute='category', column_name='Категория', widget=CategoryWidget()
@@ -238,6 +263,22 @@ class ResultEntryResource(resources.ModelResource):
         if missing:
             raise ValueError('В файле отсутствуют колонки: ' + ', '.join(missing))
 
+        # Match "CP<n>_<name>" columns to checkpoints of the selected distance.
+        # Columns whose checkpoint does not exist are ignored.
+        checkpoints = {
+            cleanup_text(checkpoint.name).casefold(): checkpoint
+            for checkpoint in Checkpoint.objects.filter(distance=kwargs['distance'])
+        }
+        self.split_columns = {}
+        for header in headers:
+            match = SPLIT_COLUMN_RE.match(header)
+            if not match:
+                continue
+            name = cleanup_text(match.group(1))
+            checkpoint = checkpoints.get(name.casefold())
+            if checkpoint is not None:
+                self.split_columns[header] = checkpoint
+
     def before_import_row(self, row, **kwargs):
         category = normalize_category(row.get('Категория'))
         row['Категория'] = category
@@ -250,6 +291,24 @@ class ResultEntryResource(resources.ModelResource):
             if result_status in STATUS_IN_RESULT:
                 row['Статус'] = result_status
 
+        # Parse split times now so a bad value invalidates the whole row.
+        split_times = []
+        for column, checkpoint in getattr(self, 'split_columns', {}).items():
+            split_time = SPLIT_TIME_WIDGET.clean(row.get(column), row=row)
+            if split_time is not None:
+                split_times.append((checkpoint, split_time))
+        row[SPLIT_ROW_KEY] = split_times
+
     def before_save_instance(self, instance, row, **kwargs):
         instance.distance = kwargs['distance']
         instance.date = kwargs['date']
+
+    def after_save_instance(self, instance, row, **kwargs):
+        if kwargs.get('dry_run') or instance.pk is None:
+            return
+        for checkpoint, time in row.get(SPLIT_ROW_KEY, ()):
+            Split.objects.update_or_create(
+                result=instance,
+                checkpoint=checkpoint,
+                defaults={'time': time},
+            )
