@@ -21,12 +21,11 @@ SPLIT_COLUMN_RE = re.compile(r'^CP\d+_(.+)$', re.IGNORECASE)
 SPLIT_ROW_KEY = '__split_times__'
 
 # Columns the protocol must contain.
-REQUIRED_COLUMNS = (
-    'Номер',
-    'Фамилия',
-    'Имя',
-    'Категория',
-)
+REQUIRED_COLUMNS = ('Номер',)
+# The athlete name is usually split into two columns, but some protocols have
+# a single "Фамилия имя" column instead.
+NAME_COLUMNS = ('Фамилия', 'Имя')
+COMBINED_NAME_COLUMN = 'Фамилия имя'
 
 CLUB_PLACEHOLDERS = {'нет клуба', 'no club', 'нет клуба/no club'}
 # Statuses are sometimes written into the "Результат" column instead of a time.
@@ -38,6 +37,15 @@ TIME_RE = re.compile(r'^(?:(\d+):)?(\d{1,2}):(\d{2})(?:[.,](\d{1,6}))?$')
 
 # Cyrillic letters are translated to their Latin counterparts used by the model.
 CATEGORY_TRANSLATION = str.maketrans({'Ж': 'F', 'М': 'M'})
+# Some protocols spell the gender out instead of using a single letter.
+CATEGORY_WORD_TRANSLATION = {
+    'ЖЕНЩИНЫ': 'F',
+    'ДЕВУШКИ': 'F',
+    'МУЖЧИНЫ': 'M',
+    'ЮНОШИ': 'M',
+}
+# Categories may end with an age marker: "Мужчины 35-39 лет".
+CATEGORY_SUFFIX_RE = re.compile(r'\b(?:ЛЕТ|ГОД(?:А|ОВ)?)\b', re.IGNORECASE)
 
 # City names often carry a "г." / "город" marker: "г Москва", "Москва г.".
 CITY_PREFIX_RE = re.compile(r'^(?:г\.\s*|г\s+|город\s+)', re.IGNORECASE)
@@ -59,9 +67,39 @@ def cleanup_text(value):
     return ' '.join(str(value).replace('\xa0', ' ').split())
 
 
+def find_combined_name_column(headers):
+    """Return the header of a combined "Фамилия имя" column, if there is one."""
+    for header in headers:
+        if cleanup_text(header).casefold() == COMBINED_NAME_COLUMN.casefold():
+            return header
+    return None
+
+
+def split_full_name(value):
+    """Split "Иванов Иван" into surname and name.
+
+    Only the first word is the surname; everything after it becomes the name,
+    so a patronymic is kept as part of the name.
+    """
+    text = cleanup_text(value)
+    if not text:
+        return '', ''
+    surname, _, name = text.partition(' ')
+    return surname, name
+
+
+def translate_category(value):
+    """Translate a category to the Latin gender letters used by the model."""
+    text = cleanup_text(value).upper()
+    for word, letter in CATEGORY_WORD_TRANSLATION.items():
+        text = text.replace(word, letter)
+    text = CATEGORY_SUFFIX_RE.sub(' ', text)
+    return text.translate(CATEGORY_TRANSLATION)
+
+
 def normalize_category(value):
     """Normalize a category like ``F18-34`` / ``ж 60 +`` to ``F 18-34`` / ``F 60+``."""
-    text = cleanup_text(value).upper().translate(CATEGORY_TRANSLATION)
+    text = translate_category(value)
     if not text:
         return ''
     # Drop every space, then always format as "<gender letter> <age group>".
@@ -74,7 +112,7 @@ def normalize_category(value):
 
 def gender_from_category(value):
     """Determine gender from the first letter: F/Ж -> female, M/М -> male."""
-    text = cleanup_text(value).upper().translate(CATEGORY_TRANSLATION)
+    text = translate_category(value)
     if not text:
         raise ValueError('Не указана категория — невозможно определить пол')
     if text[0] == 'F':
@@ -211,6 +249,30 @@ class ResultTimeWidget(widgets.Widget):
 SPLIT_TIME_WIDGET = ResultTimeWidget()
 
 
+def fill_missing_gender_places(distance, date):
+    """Calculate missing gender places for an imported protocol.
+
+    The absolute place defines the order, so an athlete's gender place is the
+    number of same-gender athletes with a better place plus one. Only entries
+    that have both a place and a result time are filled in.
+    """
+    entries = list(
+        ResultEntry.objects.filter(distance=distance, date=date)
+        .exclude(place=None)
+        .order_by('place')
+    )
+    gender_ranks = {}
+    to_update = []
+    for entry in entries:
+        gender_ranks[entry.gender] = gender_ranks.get(entry.gender, 0) + 1
+        has_time = entry.chip_time is not None or entry.gun_time is not None
+        if entry.gender_place is None and has_time:
+            entry.gender_place = gender_ranks[entry.gender]
+            to_update.append(entry)
+    if to_update:
+        ResultEntry.objects.bulk_update(to_update, ['gender_place'])
+
+
 class ResultEntryResource(resources.ModelResource):
     """Imports a protocol file for the distance and date passed in kwargs."""
 
@@ -260,6 +322,9 @@ class ResultEntryResource(resources.ModelResource):
         dataset.headers = headers
 
         missing = [column for column in REQUIRED_COLUMNS if column not in headers]
+        self.combined_name_column = find_combined_name_column(headers)
+        if self.combined_name_column is None:
+            missing.extend(column for column in NAME_COLUMNS if column not in headers)
         if missing:
             raise ValueError('В файле отсутствуют колонки: ' + ', '.join(missing))
 
@@ -280,6 +345,17 @@ class ResultEntryResource(resources.ModelResource):
                 self.split_columns[header] = checkpoint
 
     def before_import_row(self, row, **kwargs):
+        # A protocol may keep the athlete's full name in one column. Fill the
+        # separate surname/name fields that are still empty from it.
+        combined_name_column = getattr(self, 'combined_name_column', None)
+        if combined_name_column is not None:
+            combined_name = row.pop(combined_name_column, None)
+            combined_surname, combined_first_name = split_full_name(combined_name)
+            if not cleanup_text(row.get('Фамилия')):
+                row['Фамилия'] = combined_surname
+            if not cleanup_text(row.get('Имя')):
+                row['Имя'] = combined_first_name
+
         category = normalize_category(row.get('Категория'))
         row['Категория'] = category
         # Gender is derived from the category, not from a separate column.
@@ -312,3 +388,11 @@ class ResultEntryResource(resources.ModelResource):
                 checkpoint=checkpoint,
                 defaults={'time': time},
             )
+
+    def after_import(self, dataset, result, **kwargs):
+        if kwargs.get('dry_run'):
+            return
+        distance = kwargs.get('distance')
+        date = kwargs.get('date')
+        if distance is not None and date is not None:
+            fill_missing_gender_places(distance, date)
