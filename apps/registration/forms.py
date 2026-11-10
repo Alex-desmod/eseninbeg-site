@@ -33,7 +33,7 @@ class PlannedTimeField(forms.DurationField):
 class RegistrationForm(ContactValidationMixin, HoneypotMixin, forms.ModelForm):
     website = forms.CharField(required=False, widget=forms.HiddenInput)
 
-    planned_time = PlannedTimeField(required=False, label='Планируемое время')
+    planned_time = PlannedTimeField(required=True, label='Планируемое время')
 
     consent = forms.BooleanField(
         label='Согласие на обработку персональных данных',

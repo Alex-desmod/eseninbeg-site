@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load duration_filters %}
 
 {% block title %}Результаты {{ year }} — {{ event.title }}{% endblock %}
 
@@ -121,8 +122,8 @@
                             № {{ entry.bib_number }}{% if entry.category %} · {{ entry.get_category_display }}{% endif %}
                         </div>
                     </td>
-                    <td class="py-3 pr-4 tabular-nums text-right">{{ entry.chip_time|default:'—' }}</td>
-                    <td class="py-3 tabular-nums text-right">{{ entry.gun_time|default:'—' }}</td>
+                    <td class="py-3 pr-4 tabular-nums text-right">{{ entry.chip_time|duration_hms|default:'—' }}</td>
+                    <td class="py-3 tabular-nums text-right">{{ entry.gun_time|duration_hms|default:'—' }}</td>
                 </tr>
                 <tr id="result-details-{{ entry.pk }}" class="hidden">
                     <td colspan="4" class="border-t border-neutral-200 bg-neutral-50 px-4 py-5 md:px-6">
@@ -160,7 +161,7 @@
                                         {% if entry.chip_time %}
                                         <tr>
                                             <td class="pr-4 text-neutral-600">Chip</td>
-                                            <td class="pr-4 text-right font-medium tabular-nums">{{ entry.chip_time }}</td>
+                                            <td class="pr-4 text-right font-medium tabular-nums">{{ entry.chip_time|duration_hms }}</td>
                                             <td class="text-right tabular-nums text-neutral-500">
                                                 {% if entry.chip_pace %}{{ entry.chip_pace }} мин/км{% endif %}
                                             </td>
@@ -169,7 +170,7 @@
                                         {% if entry.gun_time %}
                                         <tr>
                                             <td class="pr-4 text-neutral-600">Gun</td>
-                                            <td class="pr-4 text-right font-medium tabular-nums">{{ entry.gun_time }}</td>
+                                            <td class="pr-4 text-right font-medium tabular-nums">{{ entry.gun_time|duration_hms }}</td>
                                             <td class="text-right tabular-nums text-neutral-500">
                                                 {% if entry.gun_pace and not entry.chip_time %}{{ entry.gun_pace }} мин/км{% endif %}
                                             </td>
