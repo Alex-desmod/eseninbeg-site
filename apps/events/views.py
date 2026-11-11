@@ -71,7 +71,7 @@ class EventDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['records'] = DistanceRecord.objects.filter(
             distance__event=self.object
-        ).select_related('distance')
+        ).select_related('distance').order_by('distance_id', 'gender')
         context['result_years'] = list(
             ResultEntry.objects.filter(distance__event=self.object)
             .values_list('date__year', flat=True)

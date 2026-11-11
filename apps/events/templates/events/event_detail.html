@@ -369,30 +369,29 @@
             </div>
             {% endif %}
 
-            {% for distance in event.distances.all %}
-                {% if distance.records.exists %}
-                    <div>
-                        <h3 class="text-center font-semibold mb-4">Рекорды</h3>
-                        <div class="grid grid-cols-2 gap-6 md:gap-8">
-                            {% for record in distance.records.all|dictsort:"gender" %}
-                            <div>
-                                {% if record.photo %}
-                                <div class="record-photo w-full md:max-w-[300px] xl:max-w-[250px] mx-auto aspect-[3/4] rounded-md">
-                                    <img src="{{ record.photo.url }}" alt="{{ record.athlete }}"
-                                         class="w-full h-full object-cover rounded-md">
-                                    <span class="shine-overlay"></span>
-                                </div>
-
-                                <p class="mt-2 text-sm text-center text-neutral-600">
-                                    {{ record.athlete }} - {{ record.result_time }} ({{ record.date|date:"Y" }}) {{ distance.name }}
-                                </p>
-                                {% endif %}
+            {% if records %}
+                <h3 class="text-center font-semibold mb-4">Рекорды</h3>
+                {% regroup records by distance as records_by_distance %}
+                {% for group in records_by_distance %}
+                    <div class="grid grid-cols-2 gap-6 md:gap-8">
+                        {% for record in group.list %}
+                        <div>
+                            {% if record.photo %}
+                            <div class="record-photo w-full md:max-w-[300px] xl:max-w-[250px] mx-auto aspect-[3/4] rounded-md">
+                                <img src="{{ record.photo.url }}" alt="{{ record.athlete }}"
+                                     class="w-full h-full object-cover rounded-md">
+                                <span class="shine-overlay"></span>
                             </div>
-                            {% endfor %}
+                            {% endif %}
+                            <p class="mt-2 text-sm text-center text-neutral-600">
+                                {{ record.athlete }} - {{ record.result_time }} ({{ record.date|date:"Y" }}) {{ group.grouper.name }}
+                            </p>
                         </div>
+                        {% endfor %}
                     </div>
-                {% endif %}
-            {% endfor %}
+                {% endfor %}
+            {% endif %}
+
         </div>
     </details>
 
