@@ -51,6 +51,27 @@ CATEGORY_SUFFIX_RE = re.compile(r'\b(?:ЛЕТ|ГОД(?:А|ОВ)?)\b', re.IGNOREC
 CITY_PREFIX_RE = re.compile(r'^(?:г\.\s*|г\s+|город\s+)', re.IGNORECASE)
 CITY_SUFFIX_RE = re.compile(r'(?:[,\s]+)(?:г\.?|город)$', re.IGNORECASE)
 
+# Some protocols have a separate "Пол" column; if they do, it takes priority
+# over the gender letter of the category.
+GENDER_COLUMN = 'Пол'
+# Accepted "Пол" cell values (after trimming and uppercasing).
+GENDER_VALUES = {
+    'M': 'male',
+    'М': 'male',
+    'MALE': 'male',
+    'МУЖ': 'male',
+    'МУЖСКОЙ': 'male',
+    'МУЖЧИНЫ': 'male',
+    'ЮНОШИ': 'male',
+    'F': 'female',
+    'Ж': 'female',
+    'FEMALE': 'female',
+    'ЖЕН': 'female',
+    'ЖЕНСКИЙ': 'female',
+    'ЖЕНЩИНЫ': 'female',
+    'ДЕВУШКИ': 'female',
+}
+
 
 def is_empty(value):
     if value is None:
@@ -122,6 +143,17 @@ def gender_from_category(value):
     raise ValueError(f'Не удалось определить пол по категории: «{value}»')
 
 
+def gender_from_value(value):
+    """Determine gender from a "Пол" cell: М/Ж, мужчины/женщины, male/female."""
+    text = cleanup_text(value).upper().strip('.')
+    if not text:
+        raise ValueError('Не указан пол')
+    gender = GENDER_VALUES.get(text)
+    if gender is None:
+        raise ValueError(f'Не удалось определить пол: «{value}»')
+    return gender
+
+
 class TextWidget(widgets.Widget):
     """Text value with trimmed/collapsed whitespace; empty cells become ''."""
 
@@ -181,6 +213,11 @@ class CityWidget(TextWidget):
 class CategoryWidget(TextWidget):
     def clean(self, value, row=None, **kwargs):
         return normalize_category(value)
+
+
+class GenderWidget(widgets.Widget):
+    def clean(self, value, row=None, **kwargs):
+        return gender_from_value(value)
 
 
 class StatusWidget(widgets.Widget):
@@ -307,7 +344,9 @@ class ResultEntryResource(resources.ModelResource):
     status = fields.Field(
         attribute='status', column_name='Статус', widget=StatusWidget()
     )
-    gender = fields.Field(attribute='gender', column_name='Пол')
+    gender = fields.Field(
+        attribute='gender', column_name=GENDER_COLUMN, widget=GenderWidget()
+    )
 
     class Meta:
         model = ResultEntry
@@ -327,6 +366,17 @@ class ResultEntryResource(resources.ModelResource):
             missing.extend(column for column in NAME_COLUMNS if column not in headers)
         if missing:
             raise ValueError('В файле отсутствуют колонки: ' + ', '.join(missing))
+
+        # If the protocol has a "Пол" column, its value takes priority over the
+        # gender letter of the category.
+        self.gender_column = next(
+            (
+                header
+                for header in headers
+                if header.casefold() == GENDER_COLUMN.casefold()
+            ),
+            None,
+        )
 
         # Match "CP<n>_<name>" columns to checkpoints of the selected distance.
         # Columns whose checkpoint does not exist are ignored.
@@ -358,8 +408,15 @@ class ResultEntryResource(resources.ModelResource):
 
         category = normalize_category(row.get('Категория'))
         row['Категория'] = category
-        # Gender is derived from the category, not from a separate column.
-        row['Пол'] = gender_from_category(category)
+        # Prefer a separate "Пол" column when it is present and filled in;
+        # otherwise derive the gender from the category.
+        gender_column = getattr(self, 'gender_column', None)
+        gender = ''
+        if gender_column is not None and not is_empty(row.get(gender_column)):
+            gender = gender_from_value(row[gender_column])
+        if not gender:
+            gender = gender_from_category(category)
+        row['Пол'] = gender
         # Some protocols have no "Статус" column: the status is then written
         # into the result column (for example "DNF" instead of a time).
         if 'Статус' not in row:
