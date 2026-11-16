@@ -26,6 +26,7 @@ urlpatterns = [
     path('shop/', include('apps.shop.urls')),
     path('registration/', include('apps.registration.urls')),
     path('results/', include('apps.results.urls')),
+    path('api/v1/results/', include('apps.results.api_urls')),
 ]
 
 if settings.DEBUG:
